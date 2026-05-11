@@ -421,56 +421,67 @@
     </section>
 
     <!-- Data entry right -->
-    <section class="w-1/2 h-full flex flex-col bg-surface-container-lowest overflow-y-auto relative">
-      <!-- Header & voice -->
-      <div class="sticky top-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-outline-variant px-6 py-5 flex flex-col gap-4">
+    <section class="w-1/2 h-full flex flex-col bg-surface-container-lowest relative">
+      <!-- Header & voice (fixed) -->
+      <div class="flex-shrink-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-outline-variant px-6 py-4 flex flex-col gap-3">
         <div class="flex justify-between items-start">
           <div>
             <h2 class="text-xl font-semibold flex items-center gap-3">
               Ensemble <span id="active-mi-code">MI 01</span>
-              <span id="active-mi-status" class="text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En cours
+              <span id="active-mi-status" class="text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Estimation IA
               </span>
             </h2>
             <p id="active-mi-desc" class="text-sm text-on-surface-variant mt-1">Banc dessus stratifié — 1 tiroir Legrabox — angle arrondi</p>
           </div>
           <button id="btn-voice" class="rec-pulse flex items-center gap-3 bg-white border border-outline-variant px-4 py-2.5 rounded-full text-primary hover:bg-primary-container/10 transition-all shadow-sm group">
             <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">mic</span>
-            <span class="text-sm font-medium">Décrire ce meuble</span>
+            <span class="text-sm font-medium">Compléter à la voix</span>
             <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
           </button>
         </div>
 
+        <!-- Info banner zone — only ONE of the 3 is visible at a time -->
+
+        <!-- Plan-extracted banner -->
+        <div id="plan-banner" class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined ico-fill text-indigo-600 text-[20px] mt-0.5">auto_awesome</span>
+          <div class="flex-1 text-xs text-on-surface">
+            <strong class="text-indigo-700">L'IA a pré-rempli <span id="plan-n">4</span> pièces depuis le plan.</strong>
+            Modifiez les cellules à la main, ou utilisez la dictée pour ajouter les pièces non visibles (tiroirs, fonds…).
+          </div>
+        </div>
+
         <!-- Transcription live -->
-        <div id="transcript-box" class="hidden bg-primary-container/5 border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div id="transcript-box" class="hidden bg-primary-container/5 border border-outline-variant rounded-xl p-3 shadow-sm relative overflow-hidden">
           <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-          <div class="flex items-center gap-2 mb-2 ml-1">
+          <div class="flex items-center gap-2 mb-1 ml-1">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
             </span>
             <h3 class="text-[11px] uppercase tracking-wider text-primary font-bold">Transcription en direct</h3>
           </div>
-          <div id="transcript-text" class="text-sm text-on-surface-variant italic ml-1 tw-cursor">Écoute en cours…</div>
+          <div id="transcript-text" class="text-xs text-on-surface-variant italic ml-1 tw-cursor max-h-20 overflow-y-auto">Écoute en cours…</div>
         </div>
 
         <!-- Summary card -->
-        <div id="summary-box" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+        <div id="summary-box" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3">
           <div class="flex items-start gap-2">
-            <span class="material-symbols-outlined ico-fill text-emerald-600 check-pop">check_circle</span>
+            <span class="material-symbols-outlined ico-fill text-emerald-600 check-pop text-[20px]">check_circle</span>
             <div class="flex-1">
-              <div class="text-[11px] uppercase tracking-wider text-emerald-700 font-bold mb-1">Ce que j'ai compris</div>
-              <div id="summary-text" class="text-sm text-on-surface">—</div>
+              <div class="text-[11px] uppercase tracking-wider text-emerald-700 font-bold mb-0.5">Ce que j'ai compris</div>
+              <div id="summary-text" class="text-xs text-on-surface">—</div>
             </div>
-            <button id="btn-undo" class="text-xs text-on-surface-variant hover:text-error flex items-center gap-1">
+            <button id="btn-undo" class="text-xs text-on-surface-variant hover:text-error flex items-center gap-1 shrink-0">
               <span class="material-symbols-outlined text-[16px]">undo</span> Annuler
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Sections -->
-      <div class="p-6 flex flex-col gap-4 pb-32">
+      <!-- Sections (scrollable body) -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-4">
         <!-- Materials & pieces -->
         <div class="glass rounded-xl overflow-hidden">
           <button class="w-full px-5 py-4 flex items-center justify-between hover:bg-surface-variant/50 transition-colors" onclick="toggleSection(this)">
@@ -624,8 +635,8 @@
         </div>
       </div>
 
-      <!-- Sticky footer total -->
-      <div class="absolute bottom-0 w-full bg-surface/95 backdrop-blur-xl border-t border-outline-variant px-6 py-4 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-30">
+      <!-- Footer total (fixed at bottom of section) -->
+      <div class="flex-shrink-0 bg-surface/95 backdrop-blur-xl border-t border-outline-variant px-6 py-3 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.04)] z-30">
         <div>
           <div class="text-xs text-on-surface-variant">Total estimé pour cet ensemble (HT margé)</div>
           <div class="text-2xl text-primary flex items-baseline gap-1 font-semibold">
@@ -802,37 +813,105 @@
 /* ─────────────────────────────────────────────
    DATA
    ───────────────────────────────────────────── */
+/* Each MI has:
+   - planPieces / planLabor / planTotal  : pre-extracted by AI from PDF (initial state)
+   - voicePieces / voiceLabor / voiceTotal : enriched after dictation (only fully defined for MI 01)
+*/
 const MIs = [
-  { code: '01', title: 'Banc dessus stratifié', desc: '1 tiroir Legrabox, angle arrondi', dims: '1050×460×400', qty: 2, icon: 'weekend', highlight: { top:'8%', left:'9%', w:'30%', h:'11%' },
-    total: 4452, mat: 366, mo: 3280, sst: 273, marge: 35 },
-  { code: '02', title: 'Meuble TV',  desc: 'Méla Egger, dessus strat, 2 niches, 2 portes', dims: '1820×460×390', qty: 1, icon: 'tv', highlight: { top:'8%', left:'48%', w:'42%', h:'13%' },
-    total: 2288, mat: 295, mo: 1704, sst: 19, marge: 32 },
-  { code: '03', title: 'Bibliothèque', desc: '3 portes + niche haute LED', dims: '1350×300×2400', qty: 2, icon: 'auto_stories', highlight: { top:'25%', left:'9%', w:'28%', h:'34%' },
-    total: 7989, mat: 663, mo: 6083, sst: 319, marge: 40 },
-  { code: '04', title: 'Meuble vasque', desc: '1 tiroir anglais + 3 portes', dims: '1100×500×550', qty: 1, icon: 'wash', highlight: { top:'25%', left:'48%', w:'24%', h:'12%' },
-    total: 2879, mat: 525, mo: 1932, sst: 45, marge: 30 },
-  { code: '05', title: 'Tête de lit', desc: '2 niches, moulures, médium à peindre', dims: '2670×300×1400', qty: 1, icon: 'bed', highlight: { top:'40%', left:'48%', w:'42%', h:'18%' },
-    total: 4514, mat: 698, mo: 3245, sst: 16, marge: 35 },
-  { code: '06', title: 'Dressing', desc: 'Méla Egger, penderie + escamotable + 5 tiroirs', dims: '3620×600×2730', qty: 1, icon: 'checkroom', highlight: { top:'60%', left:'9%', w:'48%', h:'34%' },
-    total: 7052, mat: 1070, mo: 3957, sst: 974, marge: 33 },
-  { code: '07', title: 'Placard', desc: '2 modules, tiroirs + penderies', dims: '2860×600×2470', qty: 1, icon: 'door_sliding', highlight: { top:'60%', left:'62%', w:'30%', h:'34%' },
-    total: 6479, mat: 877, mo: 3921, sst: 763, marge: 38 },
+  { code: '01', title: 'Banc dessus stratifié', desc: '1 tiroir Legrabox, angle arrondi',
+    dims: '1050×460×400', qty: 2, icon: 'weekend',
+    highlight: { top:'8%', left:'9%', w:'30%', h:'11%' },
+    planPieces: [
+      { conf:'plan',material:'Strat',    piece:'Face',  qty:1, L:750,  l:400 },
+      { conf:'plan',material:'Strat',    piece:'dessus',qty:1, L:1050, l:460 },
+      { conf:'plan',material:'Strat',    piece:'angle', qty:1, L:500,  l:400 },
+      { conf:'plan',material:'Agglo 19', piece:'Coté',  qty:2, L:460,  l:400 },
+    ],
+    planLabor: { be:4, fab:25, pose:6 }, planTotal: 3120, planMat: 245, planMo: 2310, planSst: 0, planMarge: 30,
+    voicePieces: [
+      { conf:'plan', material:'Strat',     piece:'Face',  qty:1, L:750,  l:400 },
+      { conf:'plan', material:'Strat',     piece:'dessus',qty:1, L:1050, l:460 },
+      { conf:'plan', material:'Strat',     piece:'angle', qty:1, L:500,  l:400 },
+      { conf:'plan', material:'Agglo 19',  piece:'Coté',  qty:2, L:460,  l:400 },
+      { conf:'voice',material:'Méla Egger',piece:'Tr',    qty:2, L:750,  l:460 },
+      { conf:'voice',material:'Méla Egger',piece:'fond',  qty:1, L:750,  l:400 },
+      { conf:'review',material:'Strat',    piece:'ray',   qty:1, L:1162, l:550 },
+    ],
+    voiceLabor: { be:6, fab:39, pose:10 }, voiceTotal: 4452, voiceMat: 366, voiceMo: 3280, voiceSst: 273, voiceMarge: 35,
+  },
+  { code: '02', title: 'Meuble TV',  desc: 'Méla Egger, dessus strat, 2 niches, 2 portes',
+    dims: '1820×460×390', qty: 1, icon: 'tv',
+    highlight: { top:'8%', left:'48%', w:'42%', h:'13%' },
+    planPieces: [
+      { conf:'plan',material:'Méla Egger',piece:'Coté', qty:4, L:390, l:500 },
+      { conf:'plan',material:'Méla Egger',piece:'Tr',   qty:2, L:1820,l:500 },
+      { conf:'plan',material:'Strat',     piece:'dessus',qty:1,L:1820, l:460 },
+    ],
+    planLabor: { be:2, fab:13, pose:5 }, planTotal: 1640, planMat: 220, planMo: 1180, planSst: 0, planMarge: 30,
+    voiceLabor: { be:3, fab:17, pose:7 }, voiceTotal: 2288, voiceMat: 295, voiceMo: 1704, voiceSst: 19, voiceMarge: 32,
+  },
+  { code: '03', title: 'Bibliothèque', desc: '3 portes + niche haute LED',
+    dims: '1350×300×2400', qty: 2, icon: 'auto_stories',
+    highlight: { top:'25%', left:'9%', w:'28%', h:'34%' },
+    planPieces: [
+      { conf:'plan',material:'Méla Egger',piece:'Coté', qty:2, L:2400,l:300 },
+      { conf:'plan',material:'Méla Egger',piece:'ray',  qty:3, L:1350,l:300 },
+      { conf:'plan',material:'Méla Egger',piece:'po',   qty:3, L:600, l:440 },
+      { conf:'plan',material:'Strat',     piece:'fond', qty:1, L:1350,l:2400 },
+    ],
+    planLabor: { be:4, fab:22, pose:17 }, planTotal: 5500, planMat: 480, planMo: 4200, planSst: 230, planMarge: 35,
+    voiceLabor: { be:6, fab:34, pose:25 }, voiceTotal: 7989, voiceMat: 663, voiceMo: 6083, voiceSst: 319, voiceMarge: 40,
+  },
+  { code: '04', title: 'Meuble vasque', desc: '1 tiroir anglais + 3 portes',
+    dims: '1100×500×550', qty: 1, icon: 'wash',
+    highlight: { top:'25%', left:'48%', w:'24%', h:'12%' },
+    planPieces: [
+      { conf:'plan',material:'Compact unis',piece:'dessus', qty:1, L:1100,l:500 },
+      { conf:'plan',material:'Méla Egger',  piece:'Coté',  qty:2, L:550, l:500 },
+      { conf:'plan',material:'Strat',       piece:'po',    qty:3, L:380, l:440 },
+    ],
+    planLabor: { be:2, fab:15, pose:5 }, planTotal: 2010, planMat: 370, planMo: 1380, planSst: 30, planMarge: 28,
+    voiceLabor: { be:3, fab:21, pose:7 }, voiceTotal: 2879, voiceMat: 525, voiceMo: 1932, voiceSst: 45, voiceMarge: 30,
+  },
+  { code: '05', title: 'Tête de lit', desc: '2 niches, moulures, médium à peindre',
+    dims: '2670×300×1400', qty: 1, icon: 'bed',
+    highlight: { top:'40%', left:'48%', w:'42%', h:'18%' },
+    planPieces: [
+      { conf:'plan',material:'MDF next 19',piece:'fond',     qty:1, L:2670,l:1400 },
+      { conf:'plan',material:'MDF next 19',piece:'Niche Mt', qty:2, L:1400,l:300 },
+      { conf:'plan',material:'Moulure',    piece:'Cadre',    qty:4, L:1000,l:30 },
+    ],
+    planLabor: { be:3, fab:22, pose:9 }, planTotal: 3200, planMat: 500, planMo: 2300, planSst: 0, planMarge: 32,
+    voiceLabor: { be:5, fab:34, pose:13 }, voiceTotal: 4514, voiceMat: 698, voiceMo: 3245, voiceSst: 16, voiceMarge: 35,
+  },
+  { code: '06', title: 'Dressing', desc: 'Méla Egger, penderie + escamotable + 5 tiroirs',
+    dims: '3620×600×2730', qty: 1, icon: 'checkroom',
+    highlight: { top:'60%', left:'9%', w:'48%', h:'34%' },
+    planPieces: [
+      { conf:'plan',material:'Méla Egger',piece:'Coté', qty:3, L:2730,l:600 },
+      { conf:'plan',material:'Méla Egger',piece:'fond', qty:1, L:3620,l:2730 },
+      { conf:'plan',material:'Méla Egger',piece:'po',   qty:4, L:2730,l:900 },
+      { conf:'plan',material:'Méla Egger',piece:'ray',  qty:6, L:900, l:580 },
+    ],
+    planLabor: { be:3, fab:22, pose:11 }, planTotal: 4900, planMat: 750, planMo: 2700, planSst: 680, planMarge: 30,
+    voiceLabor: { be:5, fab:34, pose:17 }, voiceTotal: 7052, voiceMat: 1070, voiceMo: 3957, voiceSst: 974, voiceMarge: 33,
+  },
+  { code: '07', title: 'Placard', desc: '2 modules, tiroirs + penderies',
+    dims: '2860×600×2470', qty: 1, icon: 'door_sliding',
+    highlight: { top:'60%', left:'62%', w:'30%', h:'34%' },
+    planPieces: [
+      { conf:'plan',material:'Méla Egger',piece:'Coté', qty:3, L:2470,l:600 },
+      { conf:'plan',material:'Méla Egger',piece:'ray',  qty:5, L:1430,l:580 },
+      { conf:'plan',material:'Méla Egger',piece:'Tr',   qty:5, L:1430,l:580 },
+    ],
+    planLabor: { be:3, fab:9, pose:22 }, planTotal: 4500, planMat: 620, planMo: 2700, planSst: 530, planMarge: 35,
+    voiceLabor: { be:5, fab:13, pose:34 }, voiceTotal: 6479, voiceMat: 877, voiceMo: 3921, voiceSst: 763, voiceMarge: 38,
+  },
 ];
 
-// MI 01 detailed data (filled by voice)
-const MI01_PIECES = [
-  { conf: 'voice', material: 'Strat',     piece: 'Face',   qty: 1, L: 750,  l: 400 },
-  { conf: 'voice', material: 'Strat',     piece: 'dessus', qty: 1, L: 1050, l: 460 },
-  { conf: 'plan',  material: 'Strat',     piece: 'angle',  qty: 1, L: 500,  l: 400 },
-  { conf: 'plan',  material: 'Agglo 19',  piece: 'Coté',   qty: 2, L: 460,  l: 400 },
-  { conf: 'voice', material: 'Méla Egger',piece: 'Tr',     qty: 2, L: 750,  l: 460 },
-  { conf: 'voice', material: 'Méla Egger',piece: 'fond',   qty: 1, L: 750,  l: 400 },
-  { conf: 'review',material: 'Strat',     piece: 'ray',    qty: 1, L: 1162, l: 550 },
-];
+const MI01_VOICE = "Alors, en plus de ce que l'IA a déjà trouvé, j'ai du mélaminé Egger pour le tiroir Legrabox. Le tiroir, deux fois 750 par 460, et le fond 750 par 400. Ajoute aussi un rayon stratifié 1162 par 550 mais j'en suis pas sûr, à vérifier. Côté heures, mets six de bureau d'études, trente-neuf de fabrication, et dix de pose au lieu de l'estimation.";
 
-const MI01_VOICE = "Alors, MI 01 c'est un banc. Dessus stratifié uni, on a aussi un mélaminé Egger pour la structure intérieure et le tiroir Legrabox. La face fait 750 par 400, le dessus 1050 par 460, l'angle 500 par 400. Les côtés font 460 par 400, ils sont deux. Le tiroir, deux fois 750 par 460, et le fond 750 par 400. Mets-moi six heures de bureau d'études, trente-neuf heures de fabrication, et dix heures de pose.";
-
-const MI01_SUMMARY = "Banc 1050×460×400, qté 2. 3 matériaux détectés (Strat Egger, Agglo 19, Méla Egger), 7 pièces. Main-d'œuvre : BE 6h, Fab 39h, Pose 10h.";
+const MI01_SUMMARY = "Ajout : 2 tiroirs Méla Egger 750×460, 1 fond 750×400, 1 rayon Strat 1162×550 ⚠ (à valider). Heures BE 6h, Fab 39h, Pose 10h.";
 
 /* ─────────────────────────────────────────────
    STATE
@@ -840,7 +919,8 @@ const MI01_SUMMARY = "Banc 1050×460×400, qté 2. 3 matériaux détectés (Stra
 const state = {
   screen: 'upload',
   activeMI: '01',
-  miFilled: new Set(),  // codes of MIs that have been "saisis"
+  // Per-MI stage : 'plan' (pre-fill by AI from PDF) or 'voice' (enriched after dictation)
+  miStage: Object.fromEntries(MIs.map(m => [m.code, 'plan'])),
 };
 
 /* ─────────────────────────────────────────────
@@ -858,7 +938,7 @@ function goto(screen) {
 
 function resetDemo() {
   state.activeMI = '01';
-  state.miFilled = new Set();
+  state.miStage = Object.fromEntries(MIs.map(m => [m.code, 'plan']));
   document.getElementById('pdf-loaded').classList.add('hidden');
   document.getElementById('upload-progress').classList.add('hidden');
   goto('upload');
@@ -975,38 +1055,22 @@ document.getElementById('btn-start-saisie').addEventListener('click', () => {
    WORKSPACE SCREEN
    ───────────────────────────────────────────── */
 function renderWorkspace() {
-  // Sidebar
-  const nav = document.getElementById('workspace-nav');
-  nav.innerHTML = `
-    <div class="text-[10px] font-semibold text-outline tracking-wider uppercase mb-2 px-2">Ensembles</div>
-  ` + MIs.map(m => {
-    const isActive = m.code === state.activeMI;
-    const filled = state.miFilled.has(m.code);
-    const dotClass = filled ? 'bg-emerald-500' : (isActive ? 'bg-primary' : 'bg-outline-variant');
-    return `
-      <a href="#" onclick="event.preventDefault();state.activeMI='${m.code}';renderWorkspace()"
-         class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
-                ${isActive ? 'bg-primary-container/20 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high'}">
-        <span class="material-symbols-outlined text-[20px] ${isActive?'ico-fill':''}">${m.icon}</span>
-        <span>MI ${m.code}</span>
-        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}"></span>
-      </a>
-    `;
-  }).join('');
+  renderWorkspaceSidebarOnly();
 
-  // Active info
   const mi = MIs.find(m => m.code === state.activeMI);
+  const stage = state.miStage[mi.code];   // 'plan' or 'voice'
+
   document.getElementById('active-mi-code').textContent = 'MI ' + mi.code;
   document.getElementById('active-mi-desc').textContent = mi.title + ' — ' + mi.desc;
 
   // Status pill
   const status = document.getElementById('active-mi-status');
-  if (state.miFilled.has(mi.code)) {
+  if (stage === 'voice') {
     status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
-    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Complété`;
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Validé`;
   } else {
-    status.className = "text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
-    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> À compléter`;
+    status.className = "text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Estimation IA`;
   }
 
   // PDF highlight
@@ -1017,25 +1081,32 @@ function renderWorkspace() {
   hl.style.height = mi.highlight.h;
   document.getElementById('mi-highlight-label').textContent = 'MI ' + mi.code;
 
-  // Render pieces
-  if (state.miFilled.has(mi.code) && mi.code === '01') {
-    renderPieces(MI01_PIECES);
-    setLaborSliders(6, 39, 10);
-    document.getElementById('active-mi-total').textContent = formatEur(mi.total);
-    document.getElementById('summary-box').classList.remove('hidden');
-    document.getElementById('summary-text').textContent = MI01_SUMMARY;
-    document.getElementById('transcript-box').classList.add('hidden');
+  // Info zone : show only ONE of {plan-banner, transcript-box, summary-box}
+  const planBanner = document.getElementById('plan-banner');
+  const transcript = document.getElementById('transcript-box');
+  const summary    = document.getElementById('summary-box');
+
+  if (stage === 'voice') {
+    planBanner.classList.add('hidden');
+    transcript.classList.add('hidden');
+    summary.classList.remove('hidden');
+    document.getElementById('summary-text').textContent = (mi.code === '01')
+      ? MI01_SUMMARY
+      : `Estimation refinée pour ${mi.title}.`;
   } else {
-    document.getElementById('pieces-tbody').innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-variant text-xs italic">
-      <span class="material-symbols-outlined text-[18px] align-middle mr-1">graphic_eq</span>
-      Cliquez sur <strong class="text-primary">"Décrire ce meuble"</strong> pour démarrer la saisie vocale.
-    </td></tr>`;
-    document.getElementById('materials-count').textContent = '0 pièces';
-    setLaborSliders(0, 0, 0);
-    document.getElementById('active-mi-total').textContent = '0,00';
-    document.getElementById('summary-box').classList.add('hidden');
-    document.getElementById('transcript-box').classList.add('hidden');
+    planBanner.classList.remove('hidden');
+    transcript.classList.add('hidden');
+    summary.classList.add('hidden');
+    document.getElementById('plan-n').textContent = (mi.planPieces || []).length;
   }
+
+  // Pieces + labor + total
+  const pieces = stage === 'voice' ? (mi.voicePieces || mi.planPieces) : mi.planPieces;
+  const labor  = stage === 'voice' ? mi.voiceLabor : mi.planLabor;
+  const total  = stage === 'voice' ? mi.voiceTotal : mi.planTotal;
+  renderPieces(pieces);
+  setLaborSliders(labor.be, labor.fab, labor.pose);
+  document.getElementById('active-mi-total').textContent = formatEur(total);
 }
 
 function renderPieces(pieces, animate = false) {
@@ -1100,12 +1171,16 @@ function setLaborSliders(be, fab, pose) {
 
 /* ── Voice simulation ────────────────────────────── */
 document.getElementById('btn-voice').addEventListener('click', () => {
-  if (state.activeMI !== '01') {
-    showToast('Démo limitée à MI 01 — les autres sont à compléter manuellement');
+  const code = state.activeMI;
+  if (state.miStage[code] === 'voice') {
+    showToast('Déjà enrichi par voix. Annulez d\'abord ou modifiez à la main.');
     return;
   }
-  if (state.miFilled.has('01')) {
-    showToast('MI 01 déjà saisi. Cliquez ↺ pour réinitialiser.');
+  if (code !== '01') {
+    // For non-MI01 : instant simulation (no real transcription)
+    state.miStage[code] = 'voice';
+    renderWorkspace();
+    showToast('MI ' + code + ' enrichi par dictée (démo)');
     return;
   }
   startVoiceDemo();
@@ -1116,6 +1191,9 @@ function startVoiceDemo() {
   btn.classList.add('bg-primary','text-white');
   btn.classList.remove('bg-white');
 
+  // Switch info zone : hide plan-banner, show transcript-box
+  document.getElementById('plan-banner').classList.add('hidden');
+  document.getElementById('summary-box').classList.add('hidden');
   const tb = document.getElementById('transcript-box');
   const tt = document.getElementById('transcript-text');
   tb.classList.remove('hidden');
@@ -1129,7 +1207,6 @@ function startVoiceDemo() {
     if (i >= MI01_VOICE.length) {
       clearInterval(typer);
       tt.classList.remove('tw-cursor');
-      // After typing: fill the form
       setTimeout(() => fillMI01(), 350);
       return;
     }
@@ -1139,74 +1216,81 @@ function startVoiceDemo() {
 }
 
 function fillMI01() {
-  // Animate pieces in
-  renderPieces(MI01_PIECES, true);
-  // Animate labor sliders progressively
+  const mi = MIs.find(m => m.code === '01');
+  // Animate pieces in (full voice set)
+  renderPieces(mi.voicePieces, true);
+  // Animate labor from plan→voice values
   let s = 0;
-  const totalSteps = 24;
+  const steps = 22;
+  const from = mi.planLabor, to = mi.voiceLabor;
   const tick = setInterval(() => {
     s++;
-    const r = s / totalSteps;
-    setLaborSliders(Math.round(6*r), Math.round(39*r), Math.round(10*r));
-    if (s >= totalSteps) clearInterval(tick);
+    const r = s / steps;
+    setLaborSliders(
+      Math.round(from.be   + (to.be   - from.be)   * r),
+      Math.round(from.fab  + (to.fab  - from.fab)  * r),
+      Math.round(from.pose + (to.pose - from.pose) * r),
+    );
+    if (s >= steps) clearInterval(tick);
   }, 60);
 
-  // Animate total counter
-  const totEl = document.getElementById('active-mi-total');
-  animateCounter(totEl, 0, 4452, 1800, formatEur);
+  // Animate total from plan→voice
+  animateCounter(document.getElementById('active-mi-total'),
+    mi.planTotal, mi.voiceTotal, 1600, formatEur);
 
-  // Show summary
   setTimeout(() => {
+    state.miStage['01'] = 'voice';
+    // Switch info zone : hide transcript, show summary
+    document.getElementById('transcript-box').classList.add('hidden');
     const sb = document.getElementById('summary-box');
     sb.classList.remove('hidden');
     document.getElementById('summary-text').textContent = MI01_SUMMARY;
-    state.miFilled.add('01');
-    // Update sidebar dot
+
+    // Update status pill + sidebar
+    const status = document.getElementById('active-mi-status');
+    status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Validé`;
     renderWorkspaceSidebarOnly();
+
     // Reset voice button
     const btn = document.getElementById('btn-voice');
     btn.classList.remove('bg-primary','text-white');
     btn.classList.add('bg-white');
-    // Update status
-    const status = document.getElementById('active-mi-status');
-    status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
-    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Complété`;
-    showToast('MI 01 pré-rempli par l\'IA — vérifiez les cellules orange ⚠');
-  }, 2000);
+
+    showToast('MI 01 enrichi — vérifiez les cellules orange ⚠ avant de valider');
+  }, 1900);
 }
 
 function renderWorkspaceSidebarOnly() {
-  // Re-render only the sidebar
   const nav = document.getElementById('workspace-nav');
   nav.innerHTML = `
     <div class="text-[10px] font-semibold text-outline tracking-wider uppercase mb-2 px-2">Ensembles</div>
   ` + MIs.map(m => {
     const isActive = m.code === state.activeMI;
-    const filled = state.miFilled.has(m.code);
-    const dotClass = filled ? 'bg-emerald-500' : (isActive ? 'bg-primary' : 'bg-outline-variant');
+    const stage = state.miStage[m.code];
+    const dotClass = stage === 'voice' ? 'bg-emerald-500' : 'bg-indigo-400';
     return `
       <a href="#" onclick="event.preventDefault();state.activeMI='${m.code}';renderWorkspace()"
          class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
                 ${isActive ? 'bg-primary-container/20 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high'}">
         <span class="material-symbols-outlined text-[20px] ${isActive?'ico-fill':''}">${m.icon}</span>
         <span>MI ${m.code}</span>
-        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}"></span>
+        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}" title="${stage === 'voice' ? 'Validé' : 'Estimation IA'}"></span>
       </a>
     `;
   }).join('');
 }
 
 document.getElementById('btn-undo').addEventListener('click', () => {
-  state.miFilled.delete('01');
+  state.miStage[state.activeMI] = 'plan';
   renderWorkspace();
-  showToast('Saisie annulée');
+  showToast('Retour à l\'estimation IA initiale');
 });
 
 document.getElementById('btn-save-mi').addEventListener('click', () => {
-  state.miFilled.add(state.activeMI);
-  // Auto-fill others as if simulated
-  MIs.forEach(m => state.miFilled.add(m.code));
-  showToast('Tous les ensembles sauvegardés');
+  // Mark all MIs as voice-validated (for the synthèse demo)
+  MIs.forEach(m => state.miStage[m.code] = 'voice');
+  showToast('Tous les ensembles validés');
   setTimeout(() => goto('synth'), 600);
 });
 
@@ -1226,23 +1310,32 @@ function toggleSection(btn) {
    ───────────────────────────────────────────── */
 function renderSynth() {
   const tbody = document.getElementById('synth-tbody');
-  tbody.innerHTML = MIs.map((m, i) => `
-    <tr class="hover:bg-surface-variant/30 row-in" style="animation-delay:${i*60}ms">
-      <td class="px-4 py-3 text-sm font-medium flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-primary/50"></span>
-        MI ${m.code}
-        <span class="text-xs text-on-surface-variant">· ${m.title}</span>
-      </td>
-      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.mat)}</td>
-      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.mo)}</td>
-      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.sst)}</td>
-      <td class="px-4 py-3 text-right font-bold text-tertiary text-xs">${m.marge}%</td>
-      <td class="px-4 py-3 text-right font-bold text-primary font-code tabular-nums">${formatEur(m.total)}</td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = MIs.map((m, i) => {
+    const stage = state.miStage[m.code];
+    const mat   = stage === 'voice' ? m.voiceMat   : m.planMat;
+    const mo    = stage === 'voice' ? m.voiceMo    : m.planMo;
+    const sst   = stage === 'voice' ? m.voiceSst   : m.planSst;
+    const marge = stage === 'voice' ? m.voiceMarge : m.planMarge;
+    const total = stage === 'voice' ? m.voiceTotal : m.planTotal;
+    const dot   = stage === 'voice' ? 'bg-emerald-500' : 'bg-indigo-400';
+    return `
+      <tr class="hover:bg-surface-variant/30 row-in" style="animation-delay:${i*60}ms">
+        <td class="px-4 py-3 text-sm font-medium flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full ${dot}" title="${stage==='voice'?'Validé':'Estimation IA'}"></span>
+          MI ${m.code}
+          <span class="text-xs text-on-surface-variant">· ${m.title}</span>
+        </td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(mat)}</td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(mo)}</td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(sst)}</td>
+        <td class="px-4 py-3 text-right font-bold text-tertiary text-xs">${marge}%</td>
+        <td class="px-4 py-3 text-right font-bold text-primary font-code tabular-nums">${formatEur(total)}</td>
+      </tr>
+    `;
+  }).join('');
 
-  const brut = MIs.reduce((s, m) => s + m.total, 0);
-  const margeMoy = Math.round(MIs.reduce((s, m) => s + m.marge, 0) / MIs.length);
+  const brut = MIs.reduce((s, m) => s + (state.miStage[m.code] === 'voice' ? m.voiceTotal : m.planTotal), 0);
+  const margeMoy = Math.round(MIs.reduce((s, m) => s + (state.miStage[m.code] === 'voice' ? m.voiceMarge : m.planMarge), 0) / MIs.length);
   const margeEur = Math.round(brut * margeMoy / 100);
   const final = Math.round(brut * 1.1);
 
