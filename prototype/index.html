@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Devis Auto — Prototype</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#00288e',
+          'primary-container': '#1e40af',
+          'on-primary': '#ffffff',
+          'on-primary-container': '#a8b8ff',
+          'primary-fixed': '#dde1ff',
+          'primary-fixed-dim': '#b8c4ff',
+          secondary: '#565e74',
+          'on-secondary': '#ffffff',
+          'secondary-container': '#dae2fd',
+          tertiary: '#611e00',
+          'tertiary-container': '#872d00',
+          'on-tertiary-container': '#ffa583',
+          error: '#ba1a1a',
+          'error-container': '#ffdad6',
+          surface: '#fbf8ff',
+          'surface-variant': '#e3e1eb',
+          'surface-container': '#eeedf7',
+          'surface-container-low': '#f4f2fc',
+          'surface-container-lowest': '#ffffff',
+          'surface-container-high': '#e8e7f1',
+          'surface-container-highest': '#e3e1eb',
+          'on-surface': '#1a1b22',
+          'on-surface-variant': '#444653',
+          outline: '#757684',
+          'outline-variant': '#c4c5d5',
+        },
+        fontFamily: { sans: ['Inter','sans-serif'], code: ['JetBrains Mono','monospace'] }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #FAFAFA; font-family: Inter, sans-serif; color: #1a1b22; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400; }
+  .ico-fill { font-variation-settings: 'FILL' 1; }
+  .glass { background: #fff; border: 1px solid #c4c5d5; }
+  .glass-shadow { box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03); }
+
+  /* Screen transitions */
+  .screen { display: none; opacity: 0; }
+  .screen.active { display: flex; animation: fadeUp .4s ease forwards; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(8px);} to {opacity:1; transform:translateY(0);} }
+
+  /* Staggered card entrance */
+  .stagger > * { opacity: 0; transform: translateY(12px); animation: stIn .5s ease forwards; }
+  .stagger > *:nth-child(1) { animation-delay: .05s; }
+  .stagger > *:nth-child(2) { animation-delay: .15s; }
+  .stagger > *:nth-child(3) { animation-delay: .25s; }
+  .stagger > *:nth-child(4) { animation-delay: .35s; }
+  .stagger > *:nth-child(5) { animation-delay: .45s; }
+  .stagger > *:nth-child(6) { animation-delay: .55s; }
+  .stagger > *:nth-child(7) { animation-delay: .65s; }
+  @keyframes stIn { to { opacity:1; transform: translateY(0); } }
+
+  /* Voice waveform */
+  .wave { display:inline-flex; gap:2px; align-items:center; height:18px; }
+  .wave span { width:2px; background: #00288e; border-radius: 2px; animation: w 1.2s ease-in-out infinite; }
+  .wave span:nth-child(1){ height:30%; animation-delay: 0s;}
+  .wave span:nth-child(2){ height:80%; animation-delay: .1s;}
+  .wave span:nth-child(3){ height:50%; animation-delay: .2s;}
+  .wave span:nth-child(4){ height:90%; animation-delay: .3s;}
+  .wave span:nth-child(5){ height:40%; animation-delay: .4s;}
+  .wave span:nth-child(6){ height:70%; animation-delay: .5s;}
+  .wave span:nth-child(7){ height:35%; animation-delay: .6s;}
+  @keyframes w { 0%,100% { transform: scaleY(.6);} 50% { transform: scaleY(1);} }
+
+  /* Recording pulse */
+  .rec-pulse { position: relative; }
+  .rec-pulse::after {
+    content:''; position:absolute; inset:-6px; border-radius:9999px;
+    border: 2px solid #00288e; opacity:0; animation: rec 1.4s ease-out infinite;
+  }
+  @keyframes rec { 0% { transform: scale(.9); opacity:.6;} 100% { transform: scale(1.4); opacity:0;} }
+
+  /* Cell newly filled flash */
+  @keyframes flash {
+    0% { background: rgba(0,40,142,.15); }
+    100% { background: transparent; }
+  }
+  .flash { animation: flash 1.6s ease-out; }
+
+  /* Number row appear */
+  @keyframes rowIn {
+    from { opacity:0; transform: translateX(-6px); }
+    to { opacity:1; transform: translateX(0); }
+  }
+  .row-in { animation: rowIn .45s ease forwards; opacity: 0; }
+
+  /* Progress bar */
+  .progress-fill { transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+  /* PDF highlight pulse */
+  @keyframes pulseBox { 0%,100% { box-shadow: 0 0 0 0 rgba(0,40,142,.3);} 50% { box-shadow: 0 0 0 6px rgba(0,40,142,0);} }
+  .mi-zone { animation: pulseBox 2.4s ease-out infinite; }
+
+  /* Sidebar active translate */
+  .nav-item { transition: all .2s ease; }
+  .nav-item:hover { transform: translateX(2px); }
+
+  /* Tooltip */
+  .lex-chip { cursor: help; position: relative; }
+  .lex-chip:hover .lex-tip { opacity:1; pointer-events:auto; }
+  .lex-tip { position: absolute; bottom: 100%; left:50%; transform: translateX(-50%) translateY(-6px);
+    background:#1a1b22; color:#fff; font-size:11px; padding:4px 8px; border-radius:4px; white-space:nowrap;
+    opacity:0; pointer-events:none; transition:opacity .15s; z-index:50; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0;
+    background:#1a1b22; color:#fff; padding:12px 20px; border-radius:8px; display:flex; gap:8px; align-items:center;
+    transition: all .25s ease; z-index:100; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+  .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+
+  /* Confetti-ish for export */
+  @keyframes check-pop { 0% { transform: scale(0);} 60% { transform: scale(1.2);} 100% { transform: scale(1);} }
+  .check-pop { animation: check-pop .4s ease; }
+
+  /* Typewriter cursor */
+  .tw-cursor::after { content:'▍'; animation: blink 1s steps(2) infinite; color:#00288e; margin-left:1px; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  /* Disable text selection on demo controls */
+  .no-sel { user-select: none; }
+
+  /* Bottom demo bar */
+  .demo-bar {
+    position: fixed; bottom: 16px; right: 16px; z-index: 99;
+    background: #1a1b22; color: #fff; padding: 8px 12px; border-radius: 999px;
+    display: flex; gap: 8px; align-items: center; font-size: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  }
+  .demo-bar button { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    padding: 4px 10px; border-radius: 999px; cursor: pointer; transition: all .15s; }
+  .demo-bar button:hover { background: rgba(255,255,255,.2); }
+</style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- ÉCRAN 1 — UPLOAD -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section id="screen-upload" class="screen active min-h-screen flex-col items-center justify-center p-6 w-full">
+  <main class="w-full max-w-4xl flex flex-col gap-8 mx-auto my-auto">
+    <div class="text-center space-y-2 mb-4">
+      <h1 class="text-4xl font-bold tracking-tight">Nouveau projet</h1>
+      <p class="text-on-surface-variant text-sm">Importez vos documents pour démarrer l'analyse automatisée.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <!-- Upload PDF -->
+      <button id="btn-upload-pdf" class="md:col-span-3 glass glass-shadow rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 border-dashed border-2 hover:border-primary group relative overflow-hidden min-h-[320px]">
+        <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-outline-variant relative z-10">
+          <span class="material-symbols-outlined ico-fill text-primary text-3xl">upload_file</span>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 relative z-10">Plan architectural (PDF)</h3>
+        <p class="text-on-surface-variant text-xs mb-6 max-w-xs relative z-10">Glissez-déposez votre fichier ici, ou cliquez pour parcourir. Obligatoire pour la détection des ensembles.</p>
+        <div class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-semibold text-primary relative z-10 uppercase tracking-wide">Requis</div>
+        <div id="pdf-loaded" class="hidden absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px] ico-fill">check_circle</span> Plan_Autom_Devis_2.pdf
+        </div>
+      </button>
+
+      <!-- Upload CCTP -->
+      <button id="btn-upload-cctp" class="md:col-span-2 glass rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 hover:border-primary group min-h-[320px] relative">
+        <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-outline-variant">
+          <span class="material-symbols-outlined text-secondary text-2xl">description</span>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">CCTP (PDF / Word)</h3>
+        <p class="text-on-surface-variant text-xs mb-6 max-w-[200px]">Importez le CCTP pour faciliter l'analyse des matériaux. Optionnel.</p>
+        <div class="px-3 py-1 rounded-full bg-surface border border-outline-variant text-[11px] font-semibold text-on-surface-variant uppercase tracking-wide">Optionnel</div>
+      </button>
+    </div>
+
+    <!-- Progress (hidden initially) -->
+    <div id="upload-progress" class="hidden glass glass-shadow rounded-xl p-8 mt-4 relative overflow-hidden">
+      <div class="absolute top-0 left-0 h-1 bg-surface-container-highest w-full">
+        <div id="progress-bar" class="h-full bg-primary progress-fill" style="width:0%"></div>
+      </div>
+      <div class="flex items-center justify-between mb-8 mt-2">
+        <div>
+          <h3 class="text-base font-semibold flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary animate-pulse">memory</span>
+            Analyse du plan en cours…
+          </h3>
+          <p class="text-xs text-on-surface-variant mt-1">Traitement par IA des ensembles architecturaux</p>
+        </div>
+        <span id="progress-pct" class="text-primary font-code text-xs bg-primary/10 px-3 py-1 rounded-full border border-primary/20">0%</span>
+      </div>
+      <div class="relative">
+        <div class="absolute top-5 left-6 right-6 h-0.5 bg-surface-container-highest -z-10"></div>
+        <div id="progress-line" class="absolute top-5 left-6 h-0.5 bg-primary progress-fill -z-10" style="width:0%"></div>
+        <div class="flex justify-between relative z-10">
+          <div class="flex flex-col items-center w-1/3" data-step="1">
+            <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">search</span>
+            </div>
+            <span class="step-label text-xs text-on-surface-variant text-center">Détection ensembles</span>
+          </div>
+          <div class="flex flex-col items-center w-1/3" data-step="2">
+            <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">straighten</span>
+            </div>
+            <span class="step-label text-xs text-on-surface-variant text-center">Extraction cotes</span>
+          </div>
+          <div class="flex flex-col items-center w-1/3" data-step="3">
+            <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">auto_fix</span>
+            </div>
+            <span class="step-label text-xs text-on-surface-variant text-center">Pré-remplissage</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 p-4 rounded-lg bg-surface-container-low border border-outline-variant flex items-start gap-4">
+        <span class="material-symbols-outlined text-secondary mt-0.5">info</span>
+        <div class="text-xs text-on-surface-variant">
+          <p><strong class="text-on-surface font-medium">Lexique en cours de repérage :</strong>
+          <span class="lex-chip">Face<span class="lex-tip">paroi avant visible</span></span>,
+          <span class="lex-chip">Tr<span class="lex-tip">tiroir</span></span>,
+          <span class="lex-chip">po<span class="lex-tip">porte</span></span>,
+          <span class="lex-chip">Mt<span class="lex-tip">montant</span></span>,
+          <span class="lex-chip">ray<span class="lex-tip">rayon / étagère</span></span>,
+          <span class="lex-chip">fileur<span class="lex-tip">pièce de finition entre meuble et mur</span></span>,
+          Cadre, Calage, Ban, fond, dessus, angle, Coté.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- ÉCRAN 2 — VALIDATION -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section id="screen-validation" class="screen flex-col min-h-screen w-full">
+  <!-- Top nav -->
+  <nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#fafafa] border-b border-outline-variant">
+    <div class="flex items-center gap-6">
+      <span class="text-lg font-bold">Devis Auto</span>
+      <a href="#" class="text-sm font-semibold text-primary-container border-b-2 border-primary-container pb-1">Maison Mathilde</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="text-sm text-on-surface-variant hover:text-on-surface px-3 py-1.5 rounded-md">Taux horaires</button>
+      <button class="text-sm text-primary-container bg-primary-container/10 hover:bg-primary-container/20 px-4 py-1.5 rounded-full border border-primary-container/20">Éditer marges</button>
+      <span class="material-symbols-outlined text-on-surface-variant p-2">settings</span>
+      <span class="material-symbols-outlined text-on-surface-variant p-2">notifications</span>
+      <div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">person</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-14 flex-1 flex flex-col">
+    <div class="p-10 max-w-7xl mx-auto w-full">
+      <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <div class="flex items-center gap-2 text-on-surface-variant text-xs mb-2">
+            <span class="material-symbols-outlined text-[16px]">folder_open</span>
+            <span>Maison Mathilde</span>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-primary-container">Validation structure</span>
+          </div>
+          <h1 class="text-3xl font-semibold tracking-tight">Validation des Ensembles</h1>
+          <p class="text-on-surface-variant mt-2 max-w-2xl text-sm">L'IA a détecté <strong>7 ensembles</strong> distincts sur le plan PDF. Vérifiez les dimensions et quantités avant de commencer la saisie détaillée.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="bg-white border border-outline-variant px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-variant flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add_box</span> Ajouter un ensemble
+          </button>
+          <button id="btn-start-saisie" class="bg-primary-container hover:bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+            Commencer la saisie <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </div>
+      </header>
+
+      <div id="validation-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 stagger pb-20">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- ÉCRAN 3 — WORKSPACE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section id="screen-workspace" class="screen flex-col min-h-screen w-full overflow-hidden">
+  <!-- Top nav -->
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-surface/90 backdrop-blur-xl border-b border-outline-variant">
+    <div class="flex items-center gap-6">
+      <span class="text-base font-semibold">Devis Auto</span>
+      <a href="#" class="text-sm font-semibold text-primary border-b-2 border-primary pb-1 uppercase tracking-tight">Maison Mathilde</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="text-xs uppercase text-on-surface-variant hover:text-on-surface px-3 py-1.5 rounded">Taux horaires</button>
+      <button class="text-xs uppercase text-primary hover:bg-primary-container/10 px-3 py-1.5 rounded">Éditer marges</button>
+      <span class="material-symbols-outlined text-on-surface-variant p-2">notifications</span>
+      <div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">person</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-64 bg-surface-container-low/90 backdrop-blur-2xl border-r border-outline-variant z-40 p-4 flex flex-col">
+    <div class="mb-8 px-2">
+      <h1 class="text-base font-semibold text-primary">Projets</h1>
+      <p class="text-xs text-on-surface-variant">Menuiserie Pro</p>
+    </div>
+    <button class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-semibold rounded-lg py-2.5 mb-6 hover:bg-primary-fixed-dim transition-all text-sm">
+      <span class="material-symbols-outlined text-[20px]">add</span> Nouveau Devis
+    </button>
+    <nav id="workspace-nav" class="flex-1 flex flex-col gap-1 overflow-y-auto pr-2">
+      <!-- Injected by JS -->
+    </nav>
+    <div class="mt-auto pt-4 border-t border-outline-variant">
+      <button id="btn-synth" class="w-full flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors text-sm">
+        <span class="material-symbols-outlined text-[20px]">summarize</span>
+        Synthèse &amp; Export
+      </button>
+    </div>
+  </aside>
+
+  <!-- Split view -->
+  <main class="ml-64 mt-14 h-[calc(100vh-3.5rem)] flex">
+    <!-- PDF Left -->
+    <section class="w-1/2 h-full border-r border-outline-variant flex flex-col bg-surface-container-lowest overflow-hidden">
+      <div class="h-12 border-b border-outline-variant bg-surface/90 backdrop-blur-md flex items-center justify-between px-4">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[18px]">picture_as_pdf</span>
+          <span class="text-sm font-medium">Plan_Autom_Devis_2.pdf</span>
+          <span class="text-xs text-on-surface-variant">— Page <span id="pdf-page">2</span>/3</span>
+        </div>
+        <div class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded border border-outline-variant">
+          <button class="p-1 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-variant"><span class="material-symbols-outlined text-[18px]">zoom_out</span></button>
+          <span class="text-xs px-2">125%</span>
+          <button class="p-1 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-variant"><span class="material-symbols-outlined text-[18px]">zoom_in</span></button>
+        </div>
+      </div>
+      <div class="flex-1 relative bg-surface-container-low flex items-center justify-center p-8 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, rgba(0,40,142,.4) 1px, transparent 0); background-size: 32px 32px;"></div>
+        <div class="w-full h-full max-w-2xl bg-white border border-outline-variant rounded relative overflow-hidden">
+          <!-- Fake architectural plan with SVG -->
+          <svg viewBox="0 0 600 800" class="w-full h-full">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e3e1eb" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="600" height="800" fill="url(#grid)" />
+            <!-- Mock furniture sketches -->
+            <g stroke="#1a1b22" stroke-width="1.2" fill="none">
+              <!-- MI 01 banc -->
+              <rect x="60" y="80" width="180" height="60" />
+              <rect x="60" y="80" width="180" height="30" />
+              <path d="M 75 110 L 220 110" stroke-dasharray="3 3" />
+              <text x="65" y="75" font-size="10" font-weight="600" fill="#00288e">MI 01 — Banc</text>
+              <text x="65" y="155" font-size="8" fill="#444653" font-family="JetBrains Mono">1050×460×400 mm</text>
+
+              <!-- MI 02 -->
+              <rect x="290" y="80" width="240" height="80" />
+              <line x1="370" y1="80" x2="370" y2="160" />
+              <line x1="450" y1="80" x2="450" y2="160" />
+              <text x="295" y="75" font-size="10" font-weight="600" fill="#00288e">MI 02 — TV</text>
+              <text x="295" y="175" font-size="8" fill="#444653" font-family="JetBrains Mono">1820×460×390 mm</text>
+
+              <!-- MI 03 -->
+              <rect x="60" y="220" width="160" height="240" />
+              <line x1="60" y1="280" x2="220" y2="280" />
+              <line x1="60" y1="340" x2="220" y2="340" />
+              <line x1="60" y1="400" x2="220" y2="400" />
+              <text x="65" y="215" font-size="10" font-weight="600" fill="#00288e">MI 03 — Bibliothèque</text>
+              <text x="65" y="475" font-size="8" fill="#444653" font-family="JetBrains Mono">1350×300×2400 mm</text>
+
+              <!-- MI 04 -->
+              <rect x="290" y="220" width="140" height="70" />
+              <circle cx="360" cy="255" r="18" stroke="#444653" stroke-dasharray="2 2"/>
+              <text x="295" y="215" font-size="10" font-weight="600" fill="#00288e">MI 04 — Vasque</text>
+              <text x="295" y="305" font-size="8" fill="#444653" font-family="JetBrains Mono">1100×500×550 mm</text>
+
+              <!-- MI 05 -->
+              <rect x="290" y="340" width="240" height="120" />
+              <rect x="305" y="355" width="50" height="90" />
+              <rect x="465" y="355" width="50" height="90" />
+              <text x="295" y="335" font-size="10" font-weight="600" fill="#00288e">MI 05 — Tête de lit</text>
+              <text x="295" y="475" font-size="8" fill="#444653" font-family="JetBrains Mono">2670×300×1400 mm</text>
+
+              <!-- MI 06 -->
+              <rect x="60" y="520" width="280" height="240" />
+              <line x1="155" y1="520" x2="155" y2="760" />
+              <line x1="245" y1="520" x2="245" y2="760" />
+              <text x="65" y="515" font-size="10" font-weight="600" fill="#00288e">MI 06 — Dressing</text>
+              <text x="65" y="775" font-size="8" fill="#444653" font-family="JetBrains Mono">3620×600×2730 mm</text>
+
+              <!-- MI 07 -->
+              <rect x="380" y="520" width="170" height="240" />
+              <line x1="465" y1="520" x2="465" y2="760" />
+              <text x="385" y="515" font-size="10" font-weight="600" fill="#00288e">MI 07 — Placard</text>
+              <text x="385" y="775" font-size="8" fill="#444653" font-family="JetBrains Mono">2860×600×2470 mm</text>
+            </g>
+          </svg>
+          <!-- Highlight zone (dynamic) -->
+          <div id="mi-highlight" class="absolute border-2 border-primary bg-primary-container/20 rounded mi-zone transition-all duration-500 pointer-events-none flex items-start p-1.5"
+               style="top:8%; left:9%; width:30%; height:11%;">
+            <span class="bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm" id="mi-highlight-label">MI 01</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data entry right -->
+    <section class="w-1/2 h-full flex flex-col bg-surface-container-lowest overflow-y-auto relative">
+      <!-- Header & voice -->
+      <div class="sticky top-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-outline-variant px-6 py-5 flex flex-col gap-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="text-xl font-semibold flex items-center gap-3">
+              Ensemble <span id="active-mi-code">MI 01</span>
+              <span id="active-mi-status" class="text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En cours
+              </span>
+            </h2>
+            <p id="active-mi-desc" class="text-sm text-on-surface-variant mt-1">Banc dessus stratifié — 1 tiroir Legrabox — angle arrondi</p>
+          </div>
+          <button id="btn-voice" class="rec-pulse flex items-center gap-3 bg-white border border-outline-variant px-4 py-2.5 rounded-full text-primary hover:bg-primary-container/10 transition-all shadow-sm group">
+            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">mic</span>
+            <span class="text-sm font-medium">Décrire ce meuble</span>
+            <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
+          </button>
+        </div>
+
+        <!-- Transcription live -->
+        <div id="transcript-box" class="hidden bg-primary-container/5 border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden">
+          <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+          <div class="flex items-center gap-2 mb-2 ml-1">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+            </span>
+            <h3 class="text-[11px] uppercase tracking-wider text-primary font-bold">Transcription en direct</h3>
+          </div>
+          <div id="transcript-text" class="text-sm text-on-surface-variant italic ml-1 tw-cursor">Écoute en cours…</div>
+        </div>
+
+        <!-- Summary card -->
+        <div id="summary-box" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+          <div class="flex items-start gap-2">
+            <span class="material-symbols-outlined ico-fill text-emerald-600 check-pop">check_circle</span>
+            <div class="flex-1">
+              <div class="text-[11px] uppercase tracking-wider text-emerald-700 font-bold mb-1">Ce que j'ai compris</div>
+              <div id="summary-text" class="text-sm text-on-surface">—</div>
+            </div>
+            <button id="btn-undo" class="text-xs text-on-surface-variant hover:text-error flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">undo</span> Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <div class="p-6 flex flex-col gap-4 pb-32">
+        <!-- Materials & pieces -->
+        <div class="glass rounded-xl overflow-hidden">
+          <button class="w-full px-5 py-4 flex items-center justify-between hover:bg-surface-variant/50 transition-colors" onclick="toggleSection(this)">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-tertiary">inventory_2</span>
+              <span class="font-semibold">Matériaux &amp; Pièces</span>
+              <span id="materials-count" class="text-xs bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">0 pièces</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant transform rotate-180 transition-transform">expand_more</span>
+          </button>
+          <div class="px-5 pb-5 pt-0 border-t border-outline-variant">
+            <!-- Material chip selector -->
+            <div class="mt-4 mb-3 flex flex-wrap gap-2 items-center">
+              <span class="text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold mr-2">Matériau :</span>
+              <button class="mat-chip active px-3 py-1 rounded-full border border-primary bg-primary/10 text-primary text-xs font-medium">Strat Egger</button>
+              <button class="mat-chip px-3 py-1 rounded-full border border-outline-variant text-on-surface-variant text-xs hover:border-primary hover:text-primary">Agglo 19</button>
+              <button class="mat-chip px-3 py-1 rounded-full border border-outline-variant text-on-surface-variant text-xs hover:border-primary hover:text-primary">Méla Egger</button>
+              <button class="px-2 py-1 text-primary text-xs flex items-center gap-1 hover:bg-primary/5 rounded">
+                <span class="material-symbols-outlined text-[14px]">add</span> Matériau
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr class="text-on-surface-variant text-[11px] border-b border-outline-variant">
+                    <th class="pb-2 font-medium w-6"></th>
+                    <th class="pb-2 font-medium">Pièce</th>
+                    <th class="pb-2 font-medium">Qté</th>
+                    <th class="pb-2 font-medium">L (mm)</th>
+                    <th class="pb-2 font-medium">l (mm)</th>
+                    <th class="pb-2 font-medium text-right">Surf (m²)</th>
+                    <th class="pb-2 font-medium text-right">Périm (ml)</th>
+                    <th class="pb-2 font-medium w-8"></th>
+                  </tr>
+                </thead>
+                <tbody id="pieces-tbody" class="text-on-surface text-sm">
+                  <tr><td colspan="8" class="py-8 text-center text-on-surface-variant text-xs italic">
+                    <span class="material-symbols-outlined text-[18px] align-middle mr-1">graphic_eq</span>
+                    Cliquez sur <strong class="text-primary">"Décrire ce meuble"</strong> pour démarrer la saisie vocale.
+                  </td></tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="mt-3 flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-container">
+              <span class="material-symbols-outlined text-[16px]">add</span> Ajouter une pièce
+            </button>
+          </div>
+        </div>
+
+        <!-- Quincaillerie -->
+        <div class="glass rounded-xl overflow-hidden">
+          <button class="w-full px-5 py-4 flex items-center justify-between hover:bg-surface-variant/50 transition-colors" onclick="toggleSection(this)">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-secondary">handyman</span>
+              <span class="font-semibold">Quincaillerie</span>
+              <span id="quinc-count" class="text-xs bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">0</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant transition-transform">expand_more</span>
+          </button>
+          <div class="px-5 pb-5 pt-0 border-t border-outline-variant hidden">
+            <table class="w-full text-sm mt-4">
+              <thead><tr class="text-on-surface-variant text-[11px] border-b border-outline-variant">
+                <th class="pb-2 text-left font-medium">Article</th>
+                <th class="pb-2 text-right font-medium">Qté</th>
+                <th class="pb-2 text-right font-medium">PU (€)</th>
+                <th class="pb-2 text-right font-medium">Total (€)</th>
+              </tr></thead>
+              <tbody id="quinc-tbody">
+                <tr><td colspan="4" class="py-4 text-xs italic text-on-surface-variant">À renseigner</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sous-traitance -->
+        <div class="glass rounded-xl overflow-hidden">
+          <button class="w-full px-5 py-4 flex items-center justify-between hover:bg-surface-variant/50 transition-colors" onclick="toggleSection(this)">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-on-surface-variant">engineering</span>
+              <span class="font-semibold">Sous-traitance</span>
+              <span class="text-xs text-on-surface-variant">Marge SST 20 % · Log. 5 %</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant transition-transform">expand_more</span>
+          </button>
+        </div>
+
+        <!-- Main d'œuvre -->
+        <div class="glass rounded-xl overflow-hidden">
+          <button class="w-full px-5 py-4 flex items-center justify-between hover:bg-surface-variant/50 transition-colors" onclick="toggleSection(this)">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-tertiary">schedule</span>
+              <span class="font-semibold">Main-d'œuvre</span>
+              <span id="mo-total" class="text-xs bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">0 h</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant transform rotate-180 transition-transform">expand_more</span>
+          </button>
+          <div class="px-5 pb-5 pt-0 border-t border-outline-variant">
+            <div class="space-y-5 mt-4">
+              <!-- BE -->
+              <div>
+                <div class="flex justify-between items-end mb-2">
+                  <label class="text-sm">Bureau d'études (BE)</label>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">history</span> hist. <span class="font-mono">4h</span>
+                    </span>
+                    <span class="text-sm font-code text-primary"><span id="mo-be">0</span>.0 h</span>
+                  </div>
+                </div>
+                <div class="relative w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div id="mo-be-bar" class="absolute h-full bg-primary progress-fill" style="width:0%"></div>
+                </div>
+              </div>
+              <!-- Fab -->
+              <div>
+                <div class="flex justify-between items-end mb-2">
+                  <label class="text-sm">Fabrication</label>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">history</span> hist. <span class="font-mono">28h</span>
+                    </span>
+                    <span class="text-sm font-code text-primary"><span id="mo-fab">0</span>.0 h</span>
+                  </div>
+                </div>
+                <div class="relative w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div id="mo-fab-bar" class="absolute h-full bg-primary progress-fill" style="width:0%"></div>
+                </div>
+              </div>
+              <!-- Pose -->
+              <div>
+                <div class="flex justify-between items-end mb-2">
+                  <label class="text-sm">Pose</label>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">history</span> hist. <span class="font-mono">8h</span>
+                    </span>
+                    <span class="text-sm font-code text-tertiary"><span id="mo-pose">0</span>.0 h</span>
+                  </div>
+                </div>
+                <div class="relative w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div id="mo-pose-bar" class="absolute h-full bg-tertiary progress-fill" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 pt-2 border-t border-outline-variant">
+                <span class="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>
+                <span class="text-xs text-on-surface-variant">Finition chantier auto : <strong class="text-on-surface" id="mo-finition">0.0 h</strong> (10 % de la pose)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky footer total -->
+      <div class="absolute bottom-0 w-full bg-surface/95 backdrop-blur-xl border-t border-outline-variant px-6 py-4 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-30">
+        <div>
+          <div class="text-xs text-on-surface-variant">Total estimé pour cet ensemble (HT margé)</div>
+          <div class="text-2xl text-primary flex items-baseline gap-1 font-semibold">
+            <span id="active-mi-total" class="font-code tabular-nums">0,00</span>
+            <span class="text-sm font-normal text-on-surface-variant">€</span>
+          </div>
+        </div>
+        <button id="btn-save-mi" class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium hover:bg-primary-container transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">save</span> Valider et continuer
+        </button>
+      </div>
+    </section>
+  </main>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- ÉCRAN 4 — SYNTHÈSE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section id="screen-synth" class="screen flex-col min-h-screen w-full">
+  <header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#fafafa] border-b border-outline-variant">
+    <div class="flex items-center gap-6">
+      <span class="text-base font-semibold">Devis Auto</span>
+      <a href="#" class="text-sm font-semibold text-primary border-b-2 border-primary pb-1">Maison Mathilde</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="text-xs uppercase text-on-surface-variant px-3 py-1.5 rounded">Taux horaires</button>
+      <button class="text-xs uppercase text-primary px-3 py-1.5 rounded">Éditer marges</button>
+      <div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">person</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-14 p-10 max-w-7xl mx-auto w-full">
+    <div class="flex justify-between items-end mb-8">
+      <div>
+        <div class="flex items-center gap-2 text-on-surface-variant text-xs mb-2">
+          <button onclick="goto('workspace')" class="hover:text-primary flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">arrow_back</span> Retour saisie
+          </button>
+        </div>
+        <h1 class="text-3xl font-semibold tracking-tight mb-2">Synthèse &amp; Export</h1>
+        <p class="text-on-surface-variant text-sm max-w-2xl">Récapitulatif financier du projet <strong>Maison Mathilde</strong>. Vérifiez les totaux par ensemble avant l'export vers Excel ou Odoo.</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="opacity-50 cursor-not-allowed glass px-4 py-2 rounded text-sm font-medium text-on-surface-variant flex items-center gap-2" disabled>
+          <span class="material-symbols-outlined text-lg">cloud_upload</span> Envoyer vers Odoo
+        </button>
+        <button class="glass hover:bg-surface-container px-4 py-2 rounded text-sm font-medium flex items-center gap-2 transition-all">
+          <span class="material-symbols-outlined text-lg">picture_as_pdf</span> Aperçu PDF
+        </button>
+        <button id="btn-export-excel" class="bg-primary hover:bg-primary-container px-5 py-2 rounded text-sm font-medium text-on-primary flex items-center gap-2 transition-all glass-shadow">
+          <span class="material-symbols-outlined text-lg">download</span> Télécharger Excel
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
+      <div class="xl:col-span-3 space-y-6">
+        <div class="glass glass-shadow rounded overflow-hidden">
+          <div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+            <h2 class="text-base font-semibold flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-xl">table_chart</span>
+              Tableau récapitulatif par ensemble
+            </h2>
+            <span class="text-xs text-on-surface-variant">7 ensembles · Marché +10 %</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="text-on-surface-variant text-[11px] uppercase tracking-wider border-b border-outline-variant">
+                  <th class="px-4 py-3">Ensemble</th>
+                  <th class="px-4 py-3 text-right">Matière (€)</th>
+                  <th class="px-4 py-3 text-right">MO (€)</th>
+                  <th class="px-4 py-3 text-right">SST (€)</th>
+                  <th class="px-4 py-3 text-right text-tertiary">Marge</th>
+                  <th class="px-4 py-3 text-right text-primary">Total HT (€)</th>
+                </tr>
+              </thead>
+              <tbody id="synth-tbody" class="divide-y divide-outline-variant"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass rounded p-5 border-l-4 border-l-secondary">
+            <span class="text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">Sous-total HT brut</span>
+            <div class="text-2xl font-bold tabular-nums mt-1">
+              <span id="kpi-brut" class="counter">0</span> <span class="text-sm font-normal text-on-surface-variant">€</span>
+            </div>
+          </div>
+          <div class="glass rounded p-5 border-l-4 border-l-tertiary">
+            <span class="text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">Marge globale</span>
+            <div class="text-2xl font-bold text-tertiary tabular-nums mt-1">
+              <span id="kpi-marge">0</span><span class="text-sm font-normal text-on-surface-variant"> %</span>
+            </div>
+            <div class="text-xs text-on-surface-variant mt-1">Soit <span id="kpi-marge-eur">0</span> €</div>
+          </div>
+          <div class="glass glass-shadow rounded p-5 border-l-4 border-l-primary relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
+            <span class="text-[11px] uppercase tracking-wider text-primary font-bold">Total final (Marché +10 %)</span>
+            <div class="text-3xl font-bold text-primary tabular-nums mt-1">
+              <span id="kpi-final" class="counter">0</span> <span class="text-lg font-normal">€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings panel -->
+      <div class="xl:col-span-1">
+        <div class="glass rounded overflow-hidden sticky top-20">
+          <div class="px-5 py-4 border-b border-outline-variant flex justify-between items-center">
+            <h3 class="text-sm font-semibold flex items-center gap-2">
+              <span class="material-symbols-outlined text-on-surface-variant text-lg">tune</span> Paramètres
+            </h3>
+            <span class="material-symbols-outlined text-on-surface-variant text-sm">expand_more</span>
+          </div>
+          <div class="p-5 space-y-5">
+            <div>
+              <h4 class="text-[11px] font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">schedule</span> Taux horaires (€/h)
+              </h4>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">BE</span><span class="font-semibold">60</span></div>
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">GP</span><span class="font-semibold">60</span></div>
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">CN</span><span class="font-semibold">71</span></div>
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">Fab</span><span class="font-semibold">51</span></div>
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">Dépl</span><span class="font-semibold">48</span></div>
+                <div class="flex justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">Pose</span><span class="font-semibold">65</span></div>
+                <div class="col-span-2 flex justify-between py-1.5 mt-2 bg-surface-variant/30 px-3 rounded border border-outline-variant/20">
+                  <span class="text-on-surface-variant text-[11px]">Cabine vernis</span><span class="font-bold">32 €/m²</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-[11px] font-bold text-tertiary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">calculate</span> Coefs &amp; marges
+              </h4>
+              <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between py-1.5 px-2 rounded"><span class="text-on-surface-variant">Perte panneaux</span><span class="text-tertiary font-bold bg-tertiary/10 px-2 py-0.5 rounded">×1.2</span></div>
+                <div class="flex justify-between py-1.5 px-2 rounded"><span class="text-on-surface-variant">Matière</span><span class="text-tertiary font-bold bg-tertiary/10 px-2 py-0.5 rounded">×1.2</span></div>
+                <div class="flex justify-between py-1.5 px-2 rounded"><span class="text-on-surface-variant">SST</span><span class="text-tertiary font-bold bg-tertiary/10 px-2 py-0.5 rounded">×1.2</span></div>
+                <div class="flex justify-between py-1.5 px-2 bg-surface-variant/20 rounded border border-outline-variant/20 mt-2"><span class="text-on-surface-variant font-semibold">Logistique SST</span><span class="text-secondary font-bold bg-secondary/10 px-2 py-0.5 rounded">+5 %</span></div>
+                <div class="flex justify-between py-1.5 px-2 bg-surface-variant/20 rounded border border-outline-variant/20"><span class="text-on-surface-variant font-semibold">Marché final</span><span class="text-primary font-bold bg-primary/10 px-2 py-0.5 rounded">+10 %</span></div>
+              </div>
+            </div>
+            <button class="w-full py-2.5 text-xs font-semibold hover:bg-surface-variant/50 border border-outline-variant rounded transition-colors flex justify-center items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">edit_square</span> Modifier
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+  <span class="material-symbols-outlined ico-fill text-emerald-400">check_circle</span>
+  <span id="toast-msg">OK</span>
+</div>
+
+<!-- Demo bar -->
+<div class="demo-bar no-sel">
+  <span class="opacity-60">Démo :</span>
+  <button onclick="goto('upload')">1·Upload</button>
+  <button onclick="goto('validation')">2·Validation</button>
+  <button onclick="goto('workspace')">3·Saisie</button>
+  <button onclick="goto('synth')">4·Synthèse</button>
+  <button onclick="resetDemo()" title="Réinitialiser">↺</button>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   DATA
+   ───────────────────────────────────────────── */
+const MIs = [
+  { code: '01', title: 'Banc dessus stratifié', desc: '1 tiroir Legrabox, angle arrondi', dims: '1050×460×400', qty: 2, icon: 'weekend', highlight: { top:'8%', left:'9%', w:'30%', h:'11%' },
+    total: 4452, mat: 366, mo: 3280, sst: 273, marge: 35 },
+  { code: '02', title: 'Meuble TV',  desc: 'Méla Egger, dessus strat, 2 niches, 2 portes', dims: '1820×460×390', qty: 1, icon: 'tv', highlight: { top:'8%', left:'48%', w:'42%', h:'13%' },
+    total: 2288, mat: 295, mo: 1704, sst: 19, marge: 32 },
+  { code: '03', title: 'Bibliothèque', desc: '3 portes + niche haute LED', dims: '1350×300×2400', qty: 2, icon: 'auto_stories', highlight: { top:'25%', left:'9%', w:'28%', h:'34%' },
+    total: 7989, mat: 663, mo: 6083, sst: 319, marge: 40 },
+  { code: '04', title: 'Meuble vasque', desc: '1 tiroir anglais + 3 portes', dims: '1100×500×550', qty: 1, icon: 'wash', highlight: { top:'25%', left:'48%', w:'24%', h:'12%' },
+    total: 2879, mat: 525, mo: 1932, sst: 45, marge: 30 },
+  { code: '05', title: 'Tête de lit', desc: '2 niches, moulures, médium à peindre', dims: '2670×300×1400', qty: 1, icon: 'bed', highlight: { top:'40%', left:'48%', w:'42%', h:'18%' },
+    total: 4514, mat: 698, mo: 3245, sst: 16, marge: 35 },
+  { code: '06', title: 'Dressing', desc: 'Méla Egger, penderie + escamotable + 5 tiroirs', dims: '3620×600×2730', qty: 1, icon: 'checkroom', highlight: { top:'60%', left:'9%', w:'48%', h:'34%' },
+    total: 7052, mat: 1070, mo: 3957, sst: 974, marge: 33 },
+  { code: '07', title: 'Placard', desc: '2 modules, tiroirs + penderies', dims: '2860×600×2470', qty: 1, icon: 'door_sliding', highlight: { top:'60%', left:'62%', w:'30%', h:'34%' },
+    total: 6479, mat: 877, mo: 3921, sst: 763, marge: 38 },
+];
+
+// MI 01 detailed data (filled by voice)
+const MI01_PIECES = [
+  { conf: 'voice', material: 'Strat',     piece: 'Face',   qty: 1, L: 750,  l: 400 },
+  { conf: 'voice', material: 'Strat',     piece: 'dessus', qty: 1, L: 1050, l: 460 },
+  { conf: 'plan',  material: 'Strat',     piece: 'angle',  qty: 1, L: 500,  l: 400 },
+  { conf: 'plan',  material: 'Agglo 19',  piece: 'Coté',   qty: 2, L: 460,  l: 400 },
+  { conf: 'voice', material: 'Méla Egger',piece: 'Tr',     qty: 2, L: 750,  l: 460 },
+  { conf: 'voice', material: 'Méla Egger',piece: 'fond',   qty: 1, L: 750,  l: 400 },
+  { conf: 'review',material: 'Strat',     piece: 'ray',    qty: 1, L: 1162, l: 550 },
+];
+
+const MI01_VOICE = "Alors, MI 01 c'est un banc. Dessus stratifié uni, on a aussi un mélaminé Egger pour la structure intérieure et le tiroir Legrabox. La face fait 750 par 400, le dessus 1050 par 460, l'angle 500 par 400. Les côtés font 460 par 400, ils sont deux. Le tiroir, deux fois 750 par 460, et le fond 750 par 400. Mets-moi six heures de bureau d'études, trente-neuf heures de fabrication, et dix heures de pose.";
+
+const MI01_SUMMARY = "Banc 1050×460×400, qté 2. 3 matériaux détectés (Strat Egger, Agglo 19, Méla Egger), 7 pièces. Main-d'œuvre : BE 6h, Fab 39h, Pose 10h.";
+
+/* ─────────────────────────────────────────────
+   STATE
+   ───────────────────────────────────────────── */
+const state = {
+  screen: 'upload',
+  activeMI: '01',
+  miFilled: new Set(),  // codes of MIs that have been "saisis"
+};
+
+/* ─────────────────────────────────────────────
+   NAVIGATION
+   ───────────────────────────────────────────── */
+function goto(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  state.screen = screen;
+  window.scrollTo(0,0);
+  if (screen === 'validation') renderValidation();
+  if (screen === 'workspace')  renderWorkspace();
+  if (screen === 'synth')      renderSynth();
+}
+
+function resetDemo() {
+  state.activeMI = '01';
+  state.miFilled = new Set();
+  document.getElementById('pdf-loaded').classList.add('hidden');
+  document.getElementById('upload-progress').classList.add('hidden');
+  goto('upload');
+}
+
+/* ─────────────────────────────────────────────
+   UPLOAD SCREEN
+   ───────────────────────────────────────────── */
+document.getElementById('btn-upload-pdf').addEventListener('click', () => {
+  document.getElementById('pdf-loaded').classList.remove('hidden');
+  document.getElementById('upload-progress').classList.remove('hidden');
+  runProgress();
+});
+
+function runProgress() {
+  const bar = document.getElementById('progress-bar');
+  const line = document.getElementById('progress-line');
+  const pct = document.getElementById('progress-pct');
+  const steps = document.querySelectorAll('#upload-progress [data-step]');
+  let p = 0;
+  const tick = setInterval(() => {
+    p += 3.5;
+    if (p > 100) p = 100;
+    bar.style.width = p + '%';
+    line.style.width = p + '%';
+    pct.textContent = Math.round(p) + '%';
+    // Activate steps
+    steps.forEach(s => {
+      const sp = +s.dataset.step;
+      const threshold = sp * 33;
+      const dot = s.querySelector('.step-dot');
+      const label = s.querySelector('.step-label');
+      const icon = dot.querySelector('.material-symbols-outlined');
+      if (p >= threshold) {
+        dot.classList.add('bg-primary','border-primary');
+        dot.classList.remove('bg-surface-container-lowest','border-outline-variant');
+        icon.classList.add('text-white');
+        icon.classList.remove('text-on-surface-variant');
+        icon.textContent = 'check';
+        icon.classList.add('ico-fill');
+        label.classList.add('text-primary','font-medium');
+        label.classList.remove('text-on-surface-variant');
+      } else if (p >= threshold - 33 && p < threshold) {
+        dot.classList.add('bg-primary','border-primary');
+        dot.classList.remove('bg-surface-container-lowest','border-outline-variant');
+        icon.classList.add('text-white','animate-pulse');
+        icon.classList.remove('text-on-surface-variant');
+        label.classList.add('text-primary','font-medium');
+        label.classList.remove('text-on-surface-variant');
+      }
+    });
+    if (p >= 100) {
+      clearInterval(tick);
+      setTimeout(() => { showToast('7 ensembles détectés'); goto('validation'); }, 700);
+    }
+  }, 80);
+}
+
+/* ─────────────────────────────────────────────
+   VALIDATION SCREEN
+   ───────────────────────────────────────────── */
+function renderValidation() {
+  const grid = document.getElementById('validation-grid');
+  grid.innerHTML = MIs.map((m, i) => `
+    <article class="glass glass-shadow rounded-xl overflow-hidden group flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-md ${i===0 ? 'bg-primary-container/10 border border-primary-container/20' : 'bg-surface-variant border border-outline-variant'} flex items-center justify-center">
+            <span class="${i===0 ? 'text-primary-container' : 'text-on-surface-variant'} font-bold text-sm">${m.code}</span>
+          </div>
+          <h3 class="text-base font-semibold">MI ${m.code}</h3>
+        </div>
+        <div class="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity">
+          <button class="text-on-surface-variant p-1.5 rounded-md hover:bg-surface-variant"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+          <button class="text-on-surface-variant hover:text-error p-1.5 rounded-md hover:bg-error-container"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+        </div>
+      </div>
+      <div class="p-5 flex-1 flex flex-col gap-4">
+        <div class="h-28 rounded bg-surface-container-low border border-outline-variant flex items-center justify-center relative">
+          <span class="material-symbols-outlined text-4xl text-outline-variant">${m.icon}</span>
+          <div class="absolute bottom-2 right-2 px-1.5 py-0.5 bg-white/90 rounded text-[10px] text-on-surface-variant border border-outline-variant">Extrait p.2</div>
+        </div>
+        <div>
+          <div class="text-sm font-medium mb-1">${m.title}</div>
+          <div class="text-xs text-on-surface-variant">${m.desc}</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-surface-container-low border border-outline-variant rounded p-2.5">
+            <div class="text-[10px] uppercase tracking-wider text-outline mb-0.5">Dim. L×P×H</div>
+            <div class="text-xs font-mono">${m.dims}</div>
+          </div>
+          <div class="bg-surface-container-low border border-outline-variant rounded p-2.5">
+            <div class="text-[10px] uppercase tracking-wider text-outline mb-0.5">Quantité</div>
+            <div class="text-lg font-semibold">${m.qty} <span class="text-xs text-on-surface-variant font-normal">unité${m.qty>1?'s':''}</span></div>
+          </div>
+        </div>
+        <div class="mt-auto pt-3 flex items-center justify-between border-t border-outline-variant">
+          <span class="text-xs text-on-surface-variant flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-outline"></span> À compléter
+          </span>
+          <button onclick="state.activeMI='${m.code}';goto('workspace')" class="text-xs text-primary hover:underline font-medium">Ouvrir</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+document.getElementById('btn-start-saisie').addEventListener('click', () => {
+  state.activeMI = '01';
+  goto('workspace');
+});
+
+/* ─────────────────────────────────────────────
+   WORKSPACE SCREEN
+   ───────────────────────────────────────────── */
+function renderWorkspace() {
+  // Sidebar
+  const nav = document.getElementById('workspace-nav');
+  nav.innerHTML = `
+    <div class="text-[10px] font-semibold text-outline tracking-wider uppercase mb-2 px-2">Ensembles</div>
+  ` + MIs.map(m => {
+    const isActive = m.code === state.activeMI;
+    const filled = state.miFilled.has(m.code);
+    const dotClass = filled ? 'bg-emerald-500' : (isActive ? 'bg-primary' : 'bg-outline-variant');
+    return `
+      <a href="#" onclick="event.preventDefault();state.activeMI='${m.code}';renderWorkspace()"
+         class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
+                ${isActive ? 'bg-primary-container/20 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high'}">
+        <span class="material-symbols-outlined text-[20px] ${isActive?'ico-fill':''}">${m.icon}</span>
+        <span>MI ${m.code}</span>
+        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}"></span>
+      </a>
+    `;
+  }).join('');
+
+  // Active info
+  const mi = MIs.find(m => m.code === state.activeMI);
+  document.getElementById('active-mi-code').textContent = 'MI ' + mi.code;
+  document.getElementById('active-mi-desc').textContent = mi.title + ' — ' + mi.desc;
+
+  // Status pill
+  const status = document.getElementById('active-mi-status');
+  if (state.miFilled.has(mi.code)) {
+    status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Complété`;
+  } else {
+    status.className = "text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> À compléter`;
+  }
+
+  // PDF highlight
+  const hl = document.getElementById('mi-highlight');
+  hl.style.top  = mi.highlight.top;
+  hl.style.left = mi.highlight.left;
+  hl.style.width  = mi.highlight.w;
+  hl.style.height = mi.highlight.h;
+  document.getElementById('mi-highlight-label').textContent = 'MI ' + mi.code;
+
+  // Render pieces
+  if (state.miFilled.has(mi.code) && mi.code === '01') {
+    renderPieces(MI01_PIECES);
+    setLaborSliders(6, 39, 10);
+    document.getElementById('active-mi-total').textContent = formatEur(mi.total);
+    document.getElementById('summary-box').classList.remove('hidden');
+    document.getElementById('summary-text').textContent = MI01_SUMMARY;
+    document.getElementById('transcript-box').classList.add('hidden');
+  } else {
+    document.getElementById('pieces-tbody').innerHTML = `<tr><td colspan="8" class="py-8 text-center text-on-surface-variant text-xs italic">
+      <span class="material-symbols-outlined text-[18px] align-middle mr-1">graphic_eq</span>
+      Cliquez sur <strong class="text-primary">"Décrire ce meuble"</strong> pour démarrer la saisie vocale.
+    </td></tr>`;
+    document.getElementById('materials-count').textContent = '0 pièces';
+    setLaborSliders(0, 0, 0);
+    document.getElementById('active-mi-total').textContent = '0,00';
+    document.getElementById('summary-box').classList.add('hidden');
+    document.getElementById('transcript-box').classList.add('hidden');
+  }
+}
+
+function renderPieces(pieces, animate = false) {
+  const tbody = document.getElementById('pieces-tbody');
+  // Group by material
+  const groups = {};
+  pieces.forEach(p => { (groups[p.material] = groups[p.material] || []).push(p); });
+  let rows = '';
+  let idx = 0;
+  for (const mat of Object.keys(groups)) {
+    rows += `<tr><td colspan="8" class="pt-4 pb-2 text-[11px] uppercase tracking-wider text-on-surface-variant font-semibold">
+      ${mat} <span class="text-[10px] opacity-60">— ${groups[mat].length} pièce${groups[mat].length>1?'s':''}</span>
+    </td></tr>`;
+    groups[mat].forEach(p => {
+      const confDot = p.conf === 'plan' ? 'bg-emerald-500'
+                    : p.conf === 'voice' ? 'bg-blue-500'
+                    : p.conf === 'auto'  ? 'bg-gray-400'
+                    : p.conf === 'review'? 'bg-orange-500' : 'bg-red-500';
+      const surf = ((p.L*p.l)/1000000).toFixed(2);
+      const peri = (2*(p.L+p.l)/1000).toFixed(2);
+      const borderCls = p.conf === 'review' ? 'border-orange-400' : 'border-outline-variant';
+      const delay = animate ? `style="animation-delay:${idx*60}ms"` : '';
+      const animCls = animate ? 'row-in' : '';
+      rows += `
+        <tr class="border-b border-outline-variant hover:bg-surface-variant/30 transition-colors group ${animCls}" ${delay}>
+          <td class="py-2.5"><div class="w-1.5 h-1.5 rounded-full ${confDot} mx-auto"></div></td>
+          <td class="py-2.5 text-sm">
+            <span class="lex-chip">${p.piece}<span class="lex-tip">${lexFor(p.piece)}</span></span>
+          </td>
+          <td class="py-2.5"><input type="number" value="${p.qty}" class="w-12 bg-white border border-outline-variant rounded px-2 py-1 text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none"></td>
+          <td class="py-2.5"><input type="number" value="${p.L}" class="w-16 bg-white ${borderCls===p.conf==='review'?'border-orange-400':'border-outline-variant'} border rounded px-2 py-1 text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none"></td>
+          <td class="py-2.5"><input type="number" value="${p.l}" class="w-16 bg-white border border-outline-variant rounded px-2 py-1 text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none"></td>
+          <td class="py-2.5 text-right text-on-surface-variant font-code text-xs">${surf}</td>
+          <td class="py-2.5 text-right text-on-surface-variant font-code text-xs">${peri}</td>
+          <td class="py-2.5 text-right"><button class="text-outline-variant hover:text-error opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-[16px]">delete</span></button></td>
+        </tr>
+      `;
+      idx++;
+    });
+  }
+  tbody.innerHTML = rows;
+  document.getElementById('materials-count').textContent = pieces.length + ' pièces · ' + Object.keys(groups).length + ' matériaux';
+}
+
+function lexFor(name) {
+  const dict = { 'Tr':'Tiroir', 'po':'Porte', 'Mt':'Montant', 'Ban':'Banquette', 'ray':'Rayon / étagère',
+    'Face':'Paroi avant', 'Coté':'Joue latérale', 'dessus':'Dessus / plateau', 'fond':'Fond du caisson',
+    'angle':'Pièce d\'angle', 'fileur':'Pièce de finition (entre meuble et mur)', 'Cadre':'Cadre périmétrique' };
+  return dict[name] || name;
+}
+
+function setLaborSliders(be, fab, pose) {
+  document.getElementById('mo-be').textContent = be;
+  document.getElementById('mo-fab').textContent = fab;
+  document.getElementById('mo-pose').textContent = pose;
+  document.getElementById('mo-be-bar').style.width  = Math.min(be * 5, 100) + '%';
+  document.getElementById('mo-fab-bar').style.width = Math.min(fab * 1.5, 100) + '%';
+  document.getElementById('mo-pose-bar').style.width = Math.min(pose * 5, 100) + '%';
+  document.getElementById('mo-finition').textContent = (pose * 0.1).toFixed(1) + ' h';
+  document.getElementById('mo-total').textContent = (be+fab+pose) + ' h';
+}
+
+/* ── Voice simulation ────────────────────────────── */
+document.getElementById('btn-voice').addEventListener('click', () => {
+  if (state.activeMI !== '01') {
+    showToast('Démo limitée à MI 01 — les autres sont à compléter manuellement');
+    return;
+  }
+  if (state.miFilled.has('01')) {
+    showToast('MI 01 déjà saisi. Cliquez ↺ pour réinitialiser.');
+    return;
+  }
+  startVoiceDemo();
+});
+
+function startVoiceDemo() {
+  const btn = document.getElementById('btn-voice');
+  btn.classList.add('bg-primary','text-white');
+  btn.classList.remove('bg-white');
+
+  const tb = document.getElementById('transcript-box');
+  const tt = document.getElementById('transcript-text');
+  tb.classList.remove('hidden');
+  tt.classList.add('tw-cursor');
+  tt.textContent = '';
+
+  // Typewriter
+  let i = 0;
+  const speed = 22;
+  const typer = setInterval(() => {
+    if (i >= MI01_VOICE.length) {
+      clearInterval(typer);
+      tt.classList.remove('tw-cursor');
+      // After typing: fill the form
+      setTimeout(() => fillMI01(), 350);
+      return;
+    }
+    tt.textContent += MI01_VOICE[i];
+    i++;
+  }, speed);
+}
+
+function fillMI01() {
+  // Animate pieces in
+  renderPieces(MI01_PIECES, true);
+  // Animate labor sliders progressively
+  let s = 0;
+  const totalSteps = 24;
+  const tick = setInterval(() => {
+    s++;
+    const r = s / totalSteps;
+    setLaborSliders(Math.round(6*r), Math.round(39*r), Math.round(10*r));
+    if (s >= totalSteps) clearInterval(tick);
+  }, 60);
+
+  // Animate total counter
+  const totEl = document.getElementById('active-mi-total');
+  animateCounter(totEl, 0, 4452, 1800, formatEur);
+
+  // Show summary
+  setTimeout(() => {
+    const sb = document.getElementById('summary-box');
+    sb.classList.remove('hidden');
+    document.getElementById('summary-text').textContent = MI01_SUMMARY;
+    state.miFilled.add('01');
+    // Update sidebar dot
+    renderWorkspaceSidebarOnly();
+    // Reset voice button
+    const btn = document.getElementById('btn-voice');
+    btn.classList.remove('bg-primary','text-white');
+    btn.classList.add('bg-white');
+    // Update status
+    const status = document.getElementById('active-mi-status');
+    status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Complété`;
+    showToast('MI 01 pré-rempli par l\'IA — vérifiez les cellules orange ⚠');
+  }, 2000);
+}
+
+function renderWorkspaceSidebarOnly() {
+  // Re-render only the sidebar
+  const nav = document.getElementById('workspace-nav');
+  nav.innerHTML = `
+    <div class="text-[10px] font-semibold text-outline tracking-wider uppercase mb-2 px-2">Ensembles</div>
+  ` + MIs.map(m => {
+    const isActive = m.code === state.activeMI;
+    const filled = state.miFilled.has(m.code);
+    const dotClass = filled ? 'bg-emerald-500' : (isActive ? 'bg-primary' : 'bg-outline-variant');
+    return `
+      <a href="#" onclick="event.preventDefault();state.activeMI='${m.code}';renderWorkspace()"
+         class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
+                ${isActive ? 'bg-primary-container/20 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high'}">
+        <span class="material-symbols-outlined text-[20px] ${isActive?'ico-fill':''}">${m.icon}</span>
+        <span>MI ${m.code}</span>
+        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}"></span>
+      </a>
+    `;
+  }).join('');
+}
+
+document.getElementById('btn-undo').addEventListener('click', () => {
+  state.miFilled.delete('01');
+  renderWorkspace();
+  showToast('Saisie annulée');
+});
+
+document.getElementById('btn-save-mi').addEventListener('click', () => {
+  state.miFilled.add(state.activeMI);
+  // Auto-fill others as if simulated
+  MIs.forEach(m => state.miFilled.add(m.code));
+  showToast('Tous les ensembles sauvegardés');
+  setTimeout(() => goto('synth'), 600);
+});
+
+document.getElementById('btn-synth').addEventListener('click', () => goto('synth'));
+
+function toggleSection(btn) {
+  const panel = btn.nextElementSibling;
+  if (!panel) return;
+  panel.classList.toggle('hidden');
+  const chev = btn.querySelector('.material-symbols-outlined.transition-transform') ||
+               btn.querySelectorAll('.material-symbols-outlined')[1];
+  if (chev) chev.classList.toggle('rotate-180');
+}
+
+/* ─────────────────────────────────────────────
+   SYNTHÈSE
+   ───────────────────────────────────────────── */
+function renderSynth() {
+  const tbody = document.getElementById('synth-tbody');
+  tbody.innerHTML = MIs.map((m, i) => `
+    <tr class="hover:bg-surface-variant/30 row-in" style="animation-delay:${i*60}ms">
+      <td class="px-4 py-3 text-sm font-medium flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary/50"></span>
+        MI ${m.code}
+        <span class="text-xs text-on-surface-variant">· ${m.title}</span>
+      </td>
+      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.mat)}</td>
+      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.mo)}</td>
+      <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(m.sst)}</td>
+      <td class="px-4 py-3 text-right font-bold text-tertiary text-xs">${m.marge}%</td>
+      <td class="px-4 py-3 text-right font-bold text-primary font-code tabular-nums">${formatEur(m.total)}</td>
+    </tr>
+  `).join('');
+
+  const brut = MIs.reduce((s, m) => s + m.total, 0);
+  const margeMoy = Math.round(MIs.reduce((s, m) => s + m.marge, 0) / MIs.length);
+  const margeEur = Math.round(brut * margeMoy / 100);
+  const final = Math.round(brut * 1.1);
+
+  animateCounter(document.getElementById('kpi-brut'), 0, brut, 1400, formatEur);
+  animateCounter(document.getElementById('kpi-marge'), 0, margeMoy, 1200, x => x);
+  animateCounter(document.getElementById('kpi-marge-eur'), 0, margeEur, 1400, formatEur);
+  animateCounter(document.getElementById('kpi-final'), 0, final, 1600, formatEur);
+}
+
+document.getElementById('btn-export-excel').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = `<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Génération…`;
+  setTimeout(() => {
+    btn.innerHTML = `<span class="material-symbols-outlined text-lg ico-fill check-pop">check_circle</span> Exporté`;
+    showToast('Fichier Devis_Maison_Mathilde.xlsx généré (avec formules)');
+    setTimeout(() => { btn.innerHTML = orig; }, 2200);
+  }, 1400);
+});
+
+/* ─────────────────────────────────────────────
+   UTILS
+   ───────────────────────────────────────────── */
+function formatEur(n) {
+  return Math.round(n).toLocaleString('fr-FR');
+}
+function animateCounter(el, from, to, dur, fmt) {
+  const start = performance.now();
+  function step(t) {
+    const p = Math.min(1, (t-start)/dur);
+    const eased = 1 - Math.pow(1-p, 3);
+    const v = from + (to-from)*eased;
+    el.textContent = fmt(v);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast.tid);
+  showToast.tid = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* Material chip selection (cosmetic only) */
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('mat-chip')) {
+    document.querySelectorAll('.mat-chip').forEach(c => {
+      c.classList.remove('border-primary','bg-primary/10','text-primary','active');
+      c.classList.add('border-outline-variant','text-on-surface-variant');
+    });
+    e.target.classList.add('border-primary','bg-primary/10','text-primary','active');
+    e.target.classList.remove('border-outline-variant','text-on-surface-variant');
+  }
+});
+</script>
+</body>
+</html>
