@@ -11,15 +11,14 @@
 
 Nous proposons de concevoir, développer et déployer un outil web qui automatise la production des devis menuiserie : à partir d'une **dictée vocale** par le chargé d'affaires, l'IA reconstitue la "Moulinette" Excel actuelle (Calcul de surfaces + Calcul de devis avec formules), réduisant le temps de saisie d'environ **30 minutes à moins de 5 minutes** par devis.
 
-Le projet est découpé en **4 phases avec jalons de validation**, chacune livrant une valeur autonome. Vous pouvez vous arrêter après n'importe quelle phase sans perdre l'investissement précédent.
+Le projet est découpé en **3 phases avec jalons de validation**, chacune livrant une valeur autonome. Vous pouvez vous arrêter après n'importe quelle phase sans perdre l'investissement précédent.
 
 | Phase | Livrable principal | Durée | Budget |
 |---|---|---|---|
-| **0 — Cadrage** | Audit de 3 devis + glossaire métier figé | 1 sem | 800 € |
-| **1 — MVP Voix → Excel** | App web : dictée vocale + saisie manuelle + export .xlsx | 3–5 sem | **6 500 €** |
-| **2 — Industrialisation** | Lecture auto du plan (OCR) + multi-utilisateur + calibration heures | 5–7 sem | 7 500 € |
+| **1 — MVP Voix → Excel** | App web : dictée vocale + saisie manuelle + export .xlsx | 4–6 sem | **7 000 €** |
+| **2 — Industrialisation** | Lecture auto du plan (OCR) + multi-utilisateur + calibration heures (RAG sur historique) | 5–7 sem | 7 500 € |
 | **3 — Intégration Odoo** | Devis envoyé bout-en-bout + signature électronique | 3–4 sem | 5 000 € |
-| | | **Total** | **19 800 €** |
+| | | **Total** | **19 500 €** |
 
 > **Décision de phase** : à la fin de chaque phase, un procès-verbal de recette acte la livraison et déclenche (ou non) le démarrage de la suivante. Vous n'êtes engagé contractuellement que sur la phase en cours.
 
@@ -44,33 +43,7 @@ L'expertise menuiserie reste celle de Nicolas et de l'équipe. L'outil ne rempla
 
 ---
 
-## 3. Phase 0 — Cadrage technique & métier *(1 semaine — 800 €)*
-
-### Objectif
-Valider sur **vos données réelles** que l'approche fonctionne avant tout investissement de développement.
-
-### Travaux
-- Atelier de 2 h avec Nicolas + 1 chargé d'affaires
-- Audit de 3 devis historiques (plan PDF + Moulinette + Calcul de devis envoyé)
-- Constitution du **glossaire métier** (Tr, po, Mt, Ban, ray, fileur, Niche Mt, etc.) avec règles d'apparition par typologie
-- Spécification de la **base de connaissances** : prix matières, taux horaires, coefficients (perte 1.2, matière 1.2, SST 1.2 + 5 % log., marché +10 %)
-- Démonstration du proto cliquable adapté à vos données
-- Test enregistré : une dictée de 2 min sur un meuble historique → l'IA produit la Moulinette correspondante
-
-### Livrables
-- **Document de cadrage** (PDF) : glossaire, règles, paramètres
-- **Démo enregistrée** sur 1 devis réel
-- **Devis ferme Phase 1** (si Go)
-
-### Critère de validation (gate)
-> L'IA a su pré-remplir au moins **60 % d'une Moulinette** sur un devis historique, avec une dictée de moins de 2 min, en moins de 30 s de traitement.
-
-### Hors périmètre
-Odoo, OCR du plan, multi-utilisateur, signature électronique, mobile.
-
----
-
-## 4. Phase 1 — MVP Voix → Excel *(3–5 semaines — 6 500 €)*
+## 3. Phase 1 — MVP Voix → Excel *(4–6 semaines — 7 000 €)*
 
 ### Objectif
 Mettre entre les mains de Nicolas (et d'un chargé d'affaires) un outil utilisable au quotidien, qui produit un fichier Excel exploitable directement.
@@ -104,11 +77,12 @@ Mettre entre les mains de Nicolas (et d'un chargé d'affaires) un outil utilisab
 - **Bouton "Télécharger Excel"** : génère un .xlsx **strictement compatible** avec votre Moulinette actuelle, formules préservées
 
 ### Sous-jalons (rendez-vous bimensuels)
-- **S1** — pipeline dictée + parsing LLM + base de connaissances v1
-- **S2** — UI de saisie, exports Excel, premières démos
-- **S3** — bouton "✨ Générer / Estimer par IA" + intégration paramètres
-- **S4** — tests sur 5 devis réels avec Nicolas
-- **S5** — ajustements de recette, mise en production
+- **S1** — atelier de démarrage : audit de 3 devis historiques, glossaire métier figé (Tr, po, Mt, Ban, ray, fileur…), spec de la base de connaissances (prix matières, taux horaires, coefs)
+- **S2** — pipeline dictée + parsing LLM + base de connaissances v1, **collecte des embeddings dans Supabase** (préparation RAG Phase 2)
+- **S3** — UI de saisie, export Excel fidèle au modèle existant
+- **S4** — bouton "✨ Générer / Estimer par IA" + panneau paramètres éditable
+- **S5** — tests sur 5 devis réels avec Nicolas et un chargé d'affaires
+- **S6** — recette, ajustements, mise en production
 
 ### Livrables
 - Application web hébergée (Netlify ou Vercel), accès protégé par mot de passe
@@ -135,7 +109,7 @@ Mettre entre les mains de Nicolas (et d'un chargé d'affaires) un outil utilisab
 
 ---
 
-## 5. Phase 2 — Industrialisation *(5–7 semaines — 7 500 €)*
+## 4. Phase 2 — Industrialisation *(5–7 semaines — 7 500 €)*
 
 ### Objectif
 Passer d'un outil utilisé par 1 ou 2 personnes à un outil partagé par l'équipe, et **adresser le problème de fond** (sous-chargement des heures).
@@ -160,7 +134,7 @@ Passer d'un outil utilisé par 1 ou 2 personnes à un outil partagé par l'équi
 
 ---
 
-## 6. Phase 3 — Intégration Odoo + email signé *(3–4 semaines — 5 000 €)*
+## 5. Phase 3 — Intégration Odoo + email signé *(3–4 semaines — 5 000 €)*
 
 ### Objectif
 Boucler le cycle : du plan reçu à la signature électronique du client, sans rupture manuelle.
@@ -182,7 +156,7 @@ Boucler le cycle : du plan reçu à la signature électronique du client, sans r
 
 ---
 
-## 7. Sujet annexe — Réconciliation BL / Factures
+## 6. Sujet annexe — Réconciliation BL / Factures
 
 Vous avez évoqué un besoin parallèle d'automatiser la réconciliation des bons de livraison et des factures (devis concurrent à 5 000 € + 200 €/mois jugé excessif).
 
@@ -190,9 +164,9 @@ Vous avez évoqué un besoin parallèle d'automatiser la réconciliation des bon
 
 ---
 
-## 8. Approche méthodologique
+## 7. Approche méthodologique
 
-### 8.1 Rythme et gouvernance
+### 7.1 Rythme et gouvernance
 
 | Cadence | Format | Participants |
 |---|---|---|
@@ -200,7 +174,7 @@ Vous avez évoqué un besoin parallèle d'automatiser la réconciliation des bon
 | Bimensuelle | Démo + recette intermédiaire | + 1 chargé d'affaires |
 | Fin de phase | Recette + PV signé | Toutes parties prenantes |
 
-### 8.2 Données à fournir par vos soins
+### 7.2 Données à fournir par vos soins
 
 Pour démarrer Phase 1 efficacement :
 - 30 devis historiques (Moulinette + Calcul + plan PDF + version envoyée)
@@ -209,19 +183,36 @@ Pour démarrer Phase 1 efficacement :
 - 2–3 CCTP types
 - Accès à un chargé d'affaires (~2 h/sem pour les tests)
 
-### 8.3 Stack technique envisagée
+### 7.3 Stack technique envisagée
 
-- **Front** : React + TypeScript + Tailwind (déjà éprouvé sur le proto)
-- **Back** : Node.js (serverless functions, ~3 endpoints)
-- **IA** : Claude Sonnet 4 (parsing) + Whisper (transcription) — modèles parmi les plus avancés du marché
-- **Hébergement** : Netlify / Vercel (déploiement automatique sur chaque commit)
-- **Export Excel** : librairie `exceljs` (préservation des formules)
+| Brique | Choix | Raison |
+|---|---|---|
+| Front | React + TypeScript + Tailwind | Déjà éprouvé sur le proto, écosystème mature |
+| Back | Node.js (functions serverless, ~5 endpoints) | Pas d'infra à maintenir, scale auto |
+| **Base de données + auth + vecteurs** | **Supabase** (PostgreSQL + `pgvector` + Auth + Storage) | EU (Frankfurt), tout-en-un, code 100 % portable (SQL standard), ~25 €/mois en pro |
+| LLM (parsing & génération) | Claude Sonnet 4 (API Anthropic) | Précision technique, latence faible, conformité EU |
+| Transcription vocale | Whisper (API) | Standard du marché, support français excellent |
+| Hébergement front + edge | Vercel ou Netlify (région EU) | Déploiement automatique sur chaque commit |
+| Export Excel | librairie `exceljs` | Préservation native des formules de votre Moulinette |
 
-### 8.4 Propriété intellectuelle
+**Point d'attention sur l'amélioration continue (RAG)**
+
+Le module de **calibration heures** de la Phase 2 repose sur un mécanisme RAG (*Retrieval-Augmented Generation*) :
+
+1. À chaque devis validé, on stocke dans Supabase l'embedding vectoriel du meuble (description + matériaux + dimensions) et la Moulinette validée correspondante.
+2. Pour un nouveau meuble, on récupère les **K meubles passés les plus similaires** (cosine similarity sur `pgvector`).
+3. On injecte ces exemples dans le prompt du LLM comme références few-shot.
+4. Le modèle produit alors une estimation **calibrée sur votre historique réel**, pas sur des moyennes génériques.
+
+→ Concrètement : plus vous utilisez l'outil, plus il propose des heures BE / Fab / Pose proches de ce que vous facturez vraiment. C'est ce mécanisme qui adresse la perte 180 k€.
+
+La **collecte des embeddings démarre dès la Phase 1** (coût négligeable, ~5 ms par devis) ; la **récupération RAG s'active en Phase 2** quand l'historique atteint un seuil de pertinence (~30 devis).
+
+### 7.4 Propriété intellectuelle
 
 Le **code source est livré et reste votre propriété** à l'issue de chaque phase. Vous pouvez à tout moment reprendre la maintenance en interne ou changer de prestataire. Pas d'enfermement technique.
 
-### 8.5 Hébergement et données
+### 7.5 Hébergement et données
 
 - Vos données restent hébergées en Europe (Netlify EU + AWS Frankfurt)
 - Aucune donnée client n'est envoyée à l'IA en clair sans transformation
@@ -229,20 +220,20 @@ Le **code source est livré et reste votre propriété** à l'issue de chaque ph
 
 ---
 
-## 9. Modalités contractuelles
+## 8. Modalités contractuelles
 
-### 9.1 Calendrier de paiement
+### 8.1 Calendrier de paiement
 
 Par phase :
 - 30 % à la commande
 - 70 % à la recette validée (PV signé)
 
-### 9.2 Engagements
+### 8.2 Engagements
 
 - **Notre engagement** : livraison conforme au périmètre figé en début de phase, dans les délais annoncés (+/- 1 semaine), avec recette objective.
 - **Votre engagement** : disponibilité du sponsor (Nicolas) et d'un référent utilisateur pendant les sprints, fourniture des données dans les délais convenus.
 
-### 9.3 Maintenance après Phase 3
+### 8.3 Maintenance après Phase 3
 
 Optionnel : **forfait de maintenance 400 €/mois** comprenant
 - Hébergement + monitoring
@@ -254,7 +245,7 @@ Pas obligatoire ; vous pouvez reprendre la main en interne.
 
 ---
 
-## 10. Comparaison concurrentielle
+## 9. Comparaison concurrentielle
 
 Pour information, sur la base des éléments que vous nous avez communiqués :
 
@@ -264,7 +255,7 @@ Pour information, sur la base des éléments que vous nous avez communiqués :
 | Concurrent A (Odoo) | Lien Odoo + rédaction | 3 000 € |
 | **Concurrent A — Total** | | **6 500 €** |
 | Concurrent B (réconciliation) | Réconciliation BL ↔ factures | 5 000 € + 200 €/mois |
-| **Notre proposition (Phases 1 à 3)** | MVP voix + industrialisation + Odoo | **19 000 €** |
+| **Notre proposition (Phases 1 à 3)** | MVP voix + industrialisation + Odoo | **19 500 €** |
 
 **Différences de fond** :
 1. Nous traitons la **dictée vocale** (cœur du gain de temps), pas seulement la lecture de plan
@@ -274,12 +265,13 @@ Pour information, sur la base des éléments que vous nous avez communiqués :
 
 ---
 
-## 11. Prochaines étapes
+## 10. Prochaines étapes
 
-1. **Validation de cette proposition** (Phase 0 uniquement engageante à ce stade)
-2. **Signature du bon de commande Phase 0** (800 € — atelier + audit + démo enregistrée)
-3. **Atelier de cadrage** dans les 2 semaines
-4. **Décision Go/No-go Phase 1** sous 1 semaine après livraison Phase 0
+1. **Validation de cette proposition** (Phase 1 uniquement engageante à ce stade)
+2. **Signature du bon de commande Phase 1** (7 000 € — paiement 30 % à la commande, 70 % à la recette)
+3. **Atelier de démarrage** dans les 2 semaines (audit de 3 devis, glossaire, base de connaissances)
+4. **Démos bimensuelles** + recette en fin de Phase 1 (~6 semaines)
+5. **Décision Go/No-go Phase 2** à la livraison de la Phase 1
 
 Je reste à votre disposition pour toute question.
 
