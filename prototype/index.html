@@ -194,10 +194,10 @@
       <div class="flex items-center justify-between mb-8 mt-2">
         <div>
           <h3 class="text-base font-semibold flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary animate-pulse">memory</span>
-            Analyse du plan en cours…
+            <span class="material-symbols-outlined text-primary animate-pulse">cloud_upload</span>
+            Téléversement en cours…
           </h3>
-          <p class="text-xs text-on-surface-variant mt-1">Traitement par IA des ensembles architecturaux</p>
+          <p class="text-xs text-on-surface-variant mt-1">Le plan est stocké comme document de référence visuel.</p>
         </div>
         <span id="progress-pct" class="text-primary font-code text-xs bg-primary/10 px-3 py-1 rounded-full border border-primary/20">0%</span>
       </div>
@@ -207,35 +207,28 @@
         <div class="flex justify-between relative z-10">
           <div class="flex flex-col items-center w-1/3" data-step="1">
             <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">search</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">upload</span>
             </div>
-            <span class="step-label text-xs text-on-surface-variant text-center">Détection ensembles</span>
+            <span class="step-label text-xs text-on-surface-variant text-center">Téléversement</span>
           </div>
           <div class="flex flex-col items-center w-1/3" data-step="2">
             <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">straighten</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">topic</span>
             </div>
-            <span class="step-label text-xs text-on-surface-variant text-center">Extraction cotes</span>
+            <span class="step-label text-xs text-on-surface-variant text-center">Indexation</span>
           </div>
           <div class="flex flex-col items-center w-1/3" data-step="3">
             <div class="step-dot w-10 h-10 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center mb-3 transition-all">
-              <span class="material-symbols-outlined text-on-surface-variant text-sm">auto_fix</span>
+              <span class="material-symbols-outlined text-on-surface-variant text-sm">workspaces</span>
             </div>
-            <span class="step-label text-xs text-on-surface-variant text-center">Pré-remplissage</span>
+            <span class="step-label text-xs text-on-surface-variant text-center">Espace prêt</span>
           </div>
         </div>
       </div>
       <div class="mt-8 p-4 rounded-lg bg-surface-container-low border border-outline-variant flex items-start gap-4">
         <span class="material-symbols-outlined text-secondary mt-0.5">info</span>
         <div class="text-xs text-on-surface-variant">
-          <p><strong class="text-on-surface font-medium">Lexique en cours de repérage :</strong>
-          <span class="lex-chip">Face<span class="lex-tip">paroi avant visible</span></span>,
-          <span class="lex-chip">Tr<span class="lex-tip">tiroir</span></span>,
-          <span class="lex-chip">po<span class="lex-tip">porte</span></span>,
-          <span class="lex-chip">Mt<span class="lex-tip">montant</span></span>,
-          <span class="lex-chip">ray<span class="lex-tip">rayon / étagère</span></span>,
-          <span class="lex-chip">fileur<span class="lex-tip">pièce de finition entre meuble et mur</span></span>,
-          Cadre, Calage, Ban, fond, dessus, angle, Coté.</p>
+          <p><strong class="text-on-surface font-medium">Le plan reste un support visuel</strong> dans cette version. La saisie se fait à la voix ou à la main, et l'IA peut proposer la structure et les estimations à la demande via le bouton <span class="text-primary font-semibold inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">auto_awesome</span> Générer par IA</span>.</p>
         </div>
       </div>
     </div>
@@ -273,21 +266,21 @@
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             <span class="text-primary-container">Validation structure</span>
           </div>
-          <h1 class="text-3xl font-semibold tracking-tight">Validation des Ensembles</h1>
-          <p class="text-on-surface-variant mt-2 max-w-2xl text-sm">L'IA a détecté <strong>7 ensembles</strong> distincts sur le plan PDF. Vérifiez les dimensions et quantités avant de commencer la saisie détaillée.</p>
+          <h1 class="text-3xl font-semibold tracking-tight">Structure du projet</h1>
+          <p class="text-on-surface-variant mt-2 max-w-2xl text-sm">Ajoutez les ensembles à chiffrer manuellement, ou laissez l'IA proposer une première structure à partir d'une description du projet.</p>
         </div>
         <div class="flex items-center gap-3">
-          <button class="bg-white border border-outline-variant px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-variant flex items-center gap-2">
+          <button id="btn-add-ensemble" class="bg-white border border-outline-variant px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-variant flex items-center gap-2">
             <span class="material-symbols-outlined text-[18px]">add_box</span> Ajouter un ensemble
           </button>
-          <button id="btn-start-saisie" class="bg-primary-container hover:bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+          <button id="btn-start-saisie" class="hidden bg-primary-container hover:bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
             Commencer la saisie <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
         </div>
       </header>
 
-      <div id="validation-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 stagger pb-20">
-        <!-- Cards injected by JS -->
+      <div id="validation-grid" class="pb-20">
+        <!-- Empty state OR cards grid, rendered by JS -->
       </div>
     </div>
   </main>
@@ -434,20 +427,35 @@
             </h2>
             <p id="active-mi-desc" class="text-sm text-on-surface-variant mt-1">Banc dessus stratifié — 1 tiroir Legrabox — angle arrondi</p>
           </div>
-          <button id="btn-voice" class="rec-pulse flex items-center gap-3 bg-white border border-outline-variant px-4 py-2.5 rounded-full text-primary hover:bg-primary-container/10 transition-all shadow-sm group">
-            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">mic</span>
-            <span class="text-sm font-medium">Compléter à la voix</span>
-            <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button id="btn-ai-estimate" class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-2 rounded-full text-indigo-700 hover:bg-indigo-100 transition-all text-sm font-medium group">
+              <span class="material-symbols-outlined text-[18px] ico-fill">auto_awesome</span>
+              <span id="btn-ai-label">Estimer par IA</span>
+            </button>
+            <button id="btn-voice" class="rec-pulse flex items-center gap-3 bg-white border border-outline-variant px-4 py-2.5 rounded-full text-primary hover:bg-primary-container/10 transition-all shadow-sm group">
+              <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">mic</span>
+              <span id="btn-voice-label" class="text-sm font-medium">Décrire ce meuble</span>
+              <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
+            </button>
+          </div>
         </div>
 
         <!-- Info banner zone — only ONE of the 3 is visible at a time -->
 
+        <!-- Empty / AI suggestion banner -->
+        <div id="empty-banner" class="bg-surface-container-low border border-outline-variant rounded-xl p-3 flex items-start gap-2">
+          <span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-0.5">graphic_eq</span>
+          <div class="flex-1 text-xs text-on-surface-variant">
+            <strong class="text-on-surface">Aucune pièce pour l'instant.</strong>
+            Décrivez ce meuble à la voix, saisissez-le à la main, ou cliquez <span class="text-indigo-700 font-semibold inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px] ico-fill">auto_awesome</span> Estimer par IA</span> pour une première proposition modifiable.
+          </div>
+        </div>
+
         <!-- Plan-extracted banner -->
-        <div id="plan-banner" class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex items-start gap-2">
+        <div id="plan-banner" class="hidden bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex items-start gap-2">
           <span class="material-symbols-outlined ico-fill text-indigo-600 text-[20px] mt-0.5">auto_awesome</span>
           <div class="flex-1 text-xs text-on-surface">
-            <strong class="text-indigo-700">L'IA a pré-rempli <span id="plan-n">4</span> pièces depuis le plan.</strong>
+            <strong class="text-indigo-700">Estimation IA : <span id="plan-n">4</span> pièces proposées.</strong>
             Modifiez les cellules à la main, ou utilisez la dictée pour ajouter les pièces non visibles (tiroirs, fonds…).
           </div>
         </div>
@@ -909,9 +917,11 @@ const MIs = [
   },
 ];
 
-const MI01_VOICE = "Alors, en plus de ce que l'IA a déjà trouvé, j'ai du mélaminé Egger pour le tiroir Legrabox. Le tiroir, deux fois 750 par 460, et le fond 750 par 400. Ajoute aussi un rayon stratifié 1162 par 550 mais j'en suis pas sûr, à vérifier. Côté heures, mets six de bureau d'études, trente-neuf de fabrication, et dix de pose au lieu de l'estimation.";
+const MI01_VOICE_FROM_PLAN = "Alors, en plus de ce que l'IA a déjà trouvé, j'ai du mélaminé Egger pour le tiroir Legrabox. Le tiroir, deux fois 750 par 460, et le fond 750 par 400. Ajoute aussi un rayon stratifié 1162 par 550 mais j'en suis pas sûr, à vérifier. Côté heures, mets six de bureau d'études, trente-neuf de fabrication, et dix de pose au lieu de l'estimation.";
 
-const MI01_SUMMARY = "Ajout : 2 tiroirs Méla Egger 750×460, 1 fond 750×400, 1 rayon Strat 1162×550 ⚠ (à valider). Heures BE 6h, Fab 39h, Pose 10h.";
+const MI01_VOICE_FROM_EMPTY = "Alors, MI 01 c'est un banc avec dessus stratifié uni. La face fait 750 par 400, le dessus 1050 par 460, l'angle 500 par 400. Les côtés agglo 460 par 400, ils sont deux. En mélaminé Egger pour le tiroir Legrabox : deux fois 750 par 460, et le fond 750 par 400. Ajoute aussi un rayon stratifié 1162 par 550, à vérifier. Côté heures, six de bureau d'études, trente-neuf de fabrication, et dix de pose.";
+
+const MI01_SUMMARY = "7 pièces saisies, 3 matériaux (Strat, Agglo 19, Méla Egger). 1 cellule ⚠ à valider. Heures BE 6h, Fab 39h, Pose 10h.";
 
 /* ─────────────────────────────────────────────
    STATE
@@ -919,8 +929,9 @@ const MI01_SUMMARY = "Ajout : 2 tiroirs Méla Egger 750×460, 1 fond 750×400, 1
 const state = {
   screen: 'upload',
   activeMI: '01',
-  // Per-MI stage : 'plan' (pre-fill by AI from PDF) or 'voice' (enriched after dictation)
-  miStage: Object.fromEntries(MIs.map(m => [m.code, 'plan'])),
+  structureGenerated: false,  // user has asked AI to generate the list of ensembles
+  // Per-MI stage : 'empty' (nothing), 'plan' (AI estimation), 'voice' (enriched by dictation)
+  miStage: Object.fromEntries(MIs.map(m => [m.code, 'empty'])),
 };
 
 /* ─────────────────────────────────────────────
@@ -938,7 +949,8 @@ function goto(screen) {
 
 function resetDemo() {
   state.activeMI = '01';
-  state.miStage = Object.fromEntries(MIs.map(m => [m.code, 'plan']));
+  state.structureGenerated = false;
+  state.miStage = Object.fromEntries(MIs.map(m => [m.code, 'empty']));
   document.getElementById('pdf-loaded').classList.add('hidden');
   document.getElementById('upload-progress').classList.add('hidden');
   goto('upload');
@@ -992,7 +1004,7 @@ function runProgress() {
     });
     if (p >= 100) {
       clearInterval(tick);
-      setTimeout(() => { showToast('7 ensembles détectés'); goto('validation'); }, 700);
+      setTimeout(() => { showToast('Document chargé, espace prêt'); goto('validation'); }, 600);
     }
   }, 80);
 }
@@ -1002,6 +1014,37 @@ function runProgress() {
    ───────────────────────────────────────────── */
 function renderValidation() {
   const grid = document.getElementById('validation-grid');
+  const startBtn = document.getElementById('btn-start-saisie');
+
+  if (!state.structureGenerated) {
+    startBtn.classList.add('hidden');
+    grid.innerHTML = `
+      <div class="flex flex-col items-center justify-center text-center py-24 px-6">
+        <div class="w-20 h-20 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined ico-fill text-indigo-600 text-4xl">view_quilt</span>
+        </div>
+        <h2 class="text-xl font-semibold mb-2">Structurez votre projet</h2>
+        <p class="text-on-surface-variant text-sm max-w-md mb-8">
+          Ajoutez chaque meuble à chiffrer manuellement, ou laissez l'IA proposer une première liste à partir du plan que vous venez de téléverser.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 items-center">
+          <button onclick="addEnsembleManual()" class="bg-white border border-outline-variant px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-variant flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add</span> Ajouter manuellement
+          </button>
+          <span class="text-xs text-outline">ou</span>
+          <button onclick="generateStructureAI(this)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm transition-all">
+            <span class="material-symbols-outlined text-[18px] ico-fill">auto_awesome</span>
+            Générer la structure par IA
+          </button>
+        </div>
+        <p class="text-[11px] text-outline mt-6 max-w-md">L'IA s'appuie sur le plan téléversé et votre historique pour proposer une liste de meubles avec dimensions estimées. Tout reste modifiable.</p>
+      </div>
+    `;
+    return;
+  }
+
+  startBtn.classList.remove('hidden');
+  grid.className = 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 stagger pb-20';
   grid.innerHTML = MIs.map((m, i) => `
     <article class="glass glass-shadow rounded-xl overflow-hidden group flex flex-col">
       <div class="p-4 border-b border-outline-variant flex justify-between items-center">
@@ -1019,7 +1062,9 @@ function renderValidation() {
       <div class="p-5 flex-1 flex flex-col gap-4">
         <div class="h-28 rounded bg-surface-container-low border border-outline-variant flex items-center justify-center relative">
           <span class="material-symbols-outlined text-4xl text-outline-variant">${m.icon}</span>
-          <div class="absolute bottom-2 right-2 px-1.5 py-0.5 bg-white/90 rounded text-[10px] text-on-surface-variant border border-outline-variant">Extrait p.2</div>
+          <div class="absolute bottom-2 right-2 px-1.5 py-0.5 bg-indigo-50 rounded text-[10px] text-indigo-700 border border-indigo-200 flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px] ico-fill">auto_awesome</span> Proposé IA
+          </div>
         </div>
         <div>
           <div class="text-sm font-medium mb-1">${m.title}</div>
@@ -1037,7 +1082,7 @@ function renderValidation() {
         </div>
         <div class="mt-auto pt-3 flex items-center justify-between border-t border-outline-variant">
           <span class="text-xs text-on-surface-variant flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-outline"></span> À compléter
+            <span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Structure proposée
           </span>
           <button onclick="state.activeMI='${m.code}';goto('workspace')" class="text-xs text-primary hover:underline font-medium">Ouvrir</button>
         </div>
@@ -1046,9 +1091,29 @@ function renderValidation() {
   `).join('');
 }
 
+function generateStructureAI(btn) {
+  // Loading state on the button
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Analyse en cours…`;
+  setTimeout(() => {
+    state.structureGenerated = true;
+    renderValidation();
+    showToast('7 ensembles proposés par l\'IA — modifiables');
+  }, 1100);
+}
+
+function addEnsembleManual() {
+  showToast('Saisie manuelle (démo) — utilisez ✨ pour générer la structure');
+}
+
 document.getElementById('btn-start-saisie').addEventListener('click', () => {
   state.activeMI = '01';
   goto('workspace');
+});
+
+document.getElementById('btn-add-ensemble').addEventListener('click', () => {
+  addEnsembleManual();
 });
 
 /* ─────────────────────────────────────────────
@@ -1058,7 +1123,7 @@ function renderWorkspace() {
   renderWorkspaceSidebarOnly();
 
   const mi = MIs.find(m => m.code === state.activeMI);
-  const stage = state.miStage[mi.code];   // 'plan' or 'voice'
+  const stage = state.miStage[mi.code];   // 'empty' | 'plan' | 'voice'
 
   document.getElementById('active-mi-code').textContent = 'MI ' + mi.code;
   document.getElementById('active-mi-desc').textContent = mi.title + ' — ' + mi.desc;
@@ -1068,10 +1133,22 @@ function renderWorkspace() {
   if (stage === 'voice') {
     status.className = "text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
     status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Validé`;
-  } else {
+  } else if (stage === 'plan') {
     status.className = "text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1.5";
     status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Estimation IA`;
+  } else {
+    status.className = "text-xs font-medium bg-surface-container text-on-surface-variant border border-outline-variant px-2 py-0.5 rounded-full flex items-center gap-1.5";
+    status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Vide`;
   }
+
+  // Voice button label
+  const voiceLabel = document.getElementById('btn-voice-label');
+  voiceLabel.textContent = (stage === 'plan') ? 'Compléter à la voix' : 'Décrire ce meuble';
+
+  // AI Estimate button : visible only when stage === 'empty'
+  const aiBtn = document.getElementById('btn-ai-estimate');
+  if (stage === 'empty') aiBtn.classList.remove('hidden');
+  else aiBtn.classList.add('hidden');
 
   // PDF highlight
   const hl = document.getElementById('mi-highlight');
@@ -1081,32 +1158,47 @@ function renderWorkspace() {
   hl.style.height = mi.highlight.h;
   document.getElementById('mi-highlight-label').textContent = 'MI ' + mi.code;
 
-  // Info zone : show only ONE of {plan-banner, transcript-box, summary-box}
-  const planBanner = document.getElementById('plan-banner');
-  const transcript = document.getElementById('transcript-box');
-  const summary    = document.getElementById('summary-box');
+  // Info zone : show only ONE of {empty-banner, plan-banner, transcript-box, summary-box}
+  const emptyBanner = document.getElementById('empty-banner');
+  const planBanner  = document.getElementById('plan-banner');
+  const transcript  = document.getElementById('transcript-box');
+  const summary     = document.getElementById('summary-box');
+
+  emptyBanner.classList.add('hidden');
+  planBanner.classList.add('hidden');
+  transcript.classList.add('hidden');
+  summary.classList.add('hidden');
 
   if (stage === 'voice') {
-    planBanner.classList.add('hidden');
-    transcript.classList.add('hidden');
     summary.classList.remove('hidden');
     document.getElementById('summary-text').textContent = (mi.code === '01')
       ? MI01_SUMMARY
-      : `Estimation refinée pour ${mi.title}.`;
-  } else {
+      : `Estimation enrichie par dictée pour ${mi.title}.`;
+  } else if (stage === 'plan') {
     planBanner.classList.remove('hidden');
-    transcript.classList.add('hidden');
-    summary.classList.add('hidden');
     document.getElementById('plan-n').textContent = (mi.planPieces || []).length;
+  } else {
+    emptyBanner.classList.remove('hidden');
   }
 
   // Pieces + labor + total
-  const pieces = stage === 'voice' ? (mi.voicePieces || mi.planPieces) : mi.planPieces;
-  const labor  = stage === 'voice' ? mi.voiceLabor : mi.planLabor;
-  const total  = stage === 'voice' ? mi.voiceTotal : mi.planTotal;
-  renderPieces(pieces);
-  setLaborSliders(labor.be, labor.fab, labor.pose);
-  document.getElementById('active-mi-total').textContent = formatEur(total);
+  if (stage === 'empty') {
+    document.getElementById('pieces-tbody').innerHTML = `
+      <tr><td colspan="8" class="py-10 text-center text-on-surface-variant text-xs italic">
+        <span class="material-symbols-outlined text-[24px] block mx-auto mb-2 text-outline-variant">graphic_eq</span>
+        Aucune pièce — décrivez ce meuble à la voix ou cliquez <strong class="text-indigo-700">✨ Estimer par IA</strong>.
+      </td></tr>`;
+    document.getElementById('materials-count').textContent = '0 pièces';
+    setLaborSliders(0, 0, 0);
+    document.getElementById('active-mi-total').textContent = '—';
+  } else {
+    const pieces = stage === 'voice' ? (mi.voicePieces || mi.planPieces) : mi.planPieces;
+    const labor  = stage === 'voice' ? mi.voiceLabor : mi.planLabor;
+    const total  = stage === 'voice' ? mi.voiceTotal : mi.planTotal;
+    renderPieces(pieces);
+    setLaborSliders(labor.be, labor.fab, labor.pose);
+    document.getElementById('active-mi-total').textContent = formatEur(total);
+  }
 }
 
 function renderPieces(pieces, animate = false) {
@@ -1169,6 +1261,37 @@ function setLaborSliders(be, fab, pose) {
   document.getElementById('mo-total').textContent = (be+fab+pose) + ' h';
 }
 
+/* ── AI Estimate button (empty → plan) ───────────── */
+document.getElementById('btn-ai-estimate').addEventListener('click', () => {
+  const code = state.activeMI;
+  if (state.miStage[code] !== 'empty') return;
+  const btn = document.getElementById('btn-ai-estimate');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> <span>Analyse…</span>`;
+  setTimeout(() => {
+    const mi = MIs.find(m => m.code === code);
+    state.miStage[code] = 'plan';
+    // Animate pieces in
+    renderPieces(mi.planPieces, true);
+    // Animate labor + total
+    let s = 0; const steps = 18;
+    const tick = setInterval(() => {
+      s++; const r = s / steps;
+      setLaborSliders(Math.round(mi.planLabor.be * r), Math.round(mi.planLabor.fab * r), Math.round(mi.planLabor.pose * r));
+      if (s >= steps) clearInterval(tick);
+    }, 60);
+    animateCounter(document.getElementById('active-mi-total'), 0, mi.planTotal, 1300, formatEur);
+    // Render the rest (status pill, banners, etc.)
+    setTimeout(() => {
+      renderWorkspace();
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      showToast('Estimation IA générée — modifiable à la main ou par voix');
+    }, 1400);
+  }, 900);
+});
+
 /* ── Voice simulation ────────────────────────────── */
 document.getElementById('btn-voice').addEventListener('click', () => {
   const code = state.activeMI;
@@ -1191,38 +1314,45 @@ function startVoiceDemo() {
   btn.classList.add('bg-primary','text-white');
   btn.classList.remove('bg-white');
 
-  // Switch info zone : hide plan-banner, show transcript-box
+  // Switch info zone : hide other banners, show transcript-box
+  document.getElementById('empty-banner').classList.add('hidden');
   document.getElementById('plan-banner').classList.add('hidden');
   document.getElementById('summary-box').classList.add('hidden');
+  document.getElementById('btn-ai-estimate').classList.add('hidden');
   const tb = document.getElementById('transcript-box');
   const tt = document.getElementById('transcript-text');
   tb.classList.remove('hidden');
   tt.classList.add('tw-cursor');
   tt.textContent = '';
 
+  // Pick transcript depending on starting stage
+  const script = (state.miStage['01'] === 'empty') ? MI01_VOICE_FROM_EMPTY : MI01_VOICE_FROM_PLAN;
+
   // Typewriter
   let i = 0;
   const speed = 22;
   const typer = setInterval(() => {
-    if (i >= MI01_VOICE.length) {
+    if (i >= script.length) {
       clearInterval(typer);
       tt.classList.remove('tw-cursor');
       setTimeout(() => fillMI01(), 350);
       return;
     }
-    tt.textContent += MI01_VOICE[i];
+    tt.textContent += script[i];
     i++;
   }, speed);
 }
 
 function fillMI01() {
   const mi = MIs.find(m => m.code === '01');
+  const wasEmpty = state.miStage['01'] === 'empty';
   // Animate pieces in (full voice set)
   renderPieces(mi.voicePieces, true);
-  // Animate labor from plan→voice values
+  // Animate labor from current values → voice values
   let s = 0;
   const steps = 22;
-  const from = mi.planLabor, to = mi.voiceLabor;
+  const from = wasEmpty ? { be:0, fab:0, pose:0 } : mi.planLabor;
+  const to = mi.voiceLabor;
   const tick = setInterval(() => {
     s++;
     const r = s / steps;
@@ -1234,9 +1364,12 @@ function fillMI01() {
     if (s >= steps) clearInterval(tick);
   }, 60);
 
-  // Animate total from plan→voice
-  animateCounter(document.getElementById('active-mi-total'),
-    mi.planTotal, mi.voiceTotal, 1600, formatEur);
+  // Animate total
+  const totalEl = document.getElementById('active-mi-total');
+  const fromTotal = wasEmpty ? 0 : mi.planTotal;
+  // If empty before, set text to 0 before animating
+  if (wasEmpty) totalEl.textContent = '0';
+  animateCounter(totalEl, fromTotal, mi.voiceTotal, 1600, formatEur);
 
   setTimeout(() => {
     state.miStage['01'] = 'voice';
@@ -1268,14 +1401,19 @@ function renderWorkspaceSidebarOnly() {
   ` + MIs.map(m => {
     const isActive = m.code === state.activeMI;
     const stage = state.miStage[m.code];
-    const dotClass = stage === 'voice' ? 'bg-emerald-500' : 'bg-indigo-400';
+    const dotClass = stage === 'voice' ? 'bg-emerald-500'
+                   : stage === 'plan'  ? 'bg-indigo-400'
+                   :                     'bg-outline-variant';
+    const title = stage === 'voice' ? 'Validé'
+                : stage === 'plan'  ? 'Estimation IA'
+                :                     'Vide';
     return `
       <a href="#" onclick="event.preventDefault();state.activeMI='${m.code}';renderWorkspace()"
          class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
                 ${isActive ? 'bg-primary-container/20 text-primary font-semibold' : 'text-on-surface-variant hover:bg-surface-container-high'}">
         <span class="material-symbols-outlined text-[20px] ${isActive?'ico-fill':''}">${m.icon}</span>
         <span>MI ${m.code}</span>
-        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}" title="${stage === 'voice' ? 'Validé' : 'Estimation IA'}"></span>
+        <span class="ml-auto w-2 h-2 rounded-full ${dotClass}" title="${title}"></span>
       </a>
     `;
   }).join('');
@@ -1308,34 +1446,40 @@ function toggleSection(btn) {
 /* ─────────────────────────────────────────────
    SYNTHÈSE
    ───────────────────────────────────────────── */
+function valuesFor(m, stage) {
+  if (stage === 'voice') return { mat:m.voiceMat, mo:m.voiceMo, sst:m.voiceSst, marge:m.voiceMarge, total:m.voiceTotal };
+  if (stage === 'plan')  return { mat:m.planMat,  mo:m.planMo,  sst:m.planSst,  marge:m.planMarge,  total:m.planTotal };
+  return { mat:0, mo:0, sst:0, marge:0, total:0 };
+}
+
 function renderSynth() {
   const tbody = document.getElementById('synth-tbody');
   tbody.innerHTML = MIs.map((m, i) => {
     const stage = state.miStage[m.code];
-    const mat   = stage === 'voice' ? m.voiceMat   : m.planMat;
-    const mo    = stage === 'voice' ? m.voiceMo    : m.planMo;
-    const sst   = stage === 'voice' ? m.voiceSst   : m.planSst;
-    const marge = stage === 'voice' ? m.voiceMarge : m.planMarge;
-    const total = stage === 'voice' ? m.voiceTotal : m.planTotal;
-    const dot   = stage === 'voice' ? 'bg-emerald-500' : 'bg-indigo-400';
+    const v = valuesFor(m, stage);
+    const dot = stage === 'voice' ? 'bg-emerald-500'
+              : stage === 'plan'  ? 'bg-indigo-400'
+              :                     'bg-outline-variant';
+    const label = stage === 'voice' ? 'Validé' : stage === 'plan' ? 'Estimation IA' : 'Vide';
     return `
       <tr class="hover:bg-surface-variant/30 row-in" style="animation-delay:${i*60}ms">
         <td class="px-4 py-3 text-sm font-medium flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full ${dot}" title="${stage==='voice'?'Validé':'Estimation IA'}"></span>
+          <span class="w-1.5 h-1.5 rounded-full ${dot}" title="${label}"></span>
           MI ${m.code}
           <span class="text-xs text-on-surface-variant">· ${m.title}</span>
         </td>
-        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(mat)}</td>
-        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(mo)}</td>
-        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${formatEur(sst)}</td>
-        <td class="px-4 py-3 text-right font-bold text-tertiary text-xs">${marge}%</td>
-        <td class="px-4 py-3 text-right font-bold text-primary font-code tabular-nums">${formatEur(total)}</td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${stage==='empty'?'—':formatEur(v.mat)}</td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${stage==='empty'?'—':formatEur(v.mo)}</td>
+        <td class="px-4 py-3 text-right font-code text-xs tabular-nums">${stage==='empty'?'—':formatEur(v.sst)}</td>
+        <td class="px-4 py-3 text-right font-bold text-tertiary text-xs">${stage==='empty'?'—':v.marge+'%'}</td>
+        <td class="px-4 py-3 text-right font-bold text-primary font-code tabular-nums">${stage==='empty'?'—':formatEur(v.total)}</td>
       </tr>
     `;
   }).join('');
 
-  const brut = MIs.reduce((s, m) => s + (state.miStage[m.code] === 'voice' ? m.voiceTotal : m.planTotal), 0);
-  const margeMoy = Math.round(MIs.reduce((s, m) => s + (state.miStage[m.code] === 'voice' ? m.voiceMarge : m.planMarge), 0) / MIs.length);
+  const brut = MIs.reduce((s, m) => s + valuesFor(m, state.miStage[m.code]).total, 0);
+  const valuedCount = MIs.filter(m => state.miStage[m.code] !== 'empty').length || 1;
+  const margeMoy = Math.round(MIs.reduce((s, m) => s + valuesFor(m, state.miStage[m.code]).marge, 0) / valuedCount);
   const margeEur = Math.round(brut * margeMoy / 100);
   const final = Math.round(brut * 1.1);
 
